@@ -1,2 +1,18 @@
 # OmniBrain
-OmniBrain – An AI-powered intelligent platform designed to enhance productivity, automate tasks, and provide smart solutions through modern technologies, collaborative development, and user-centric design.
+
+OmniBrain is an AI-powered internship project developed by our team. The project aims to build an intelligent system that helps users perform tasks efficiently through automation, data analysis, and smart recommendations.
+
+## Team
+
+- Purvi  (Team Leader)
+- Narsimha
+- Srikanth
+- Aayan
+
+## Branches
+
+- main
+- frontend
+- backend
+- ai-module
+- testing
