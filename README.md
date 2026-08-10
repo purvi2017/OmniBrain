@@ -5,7 +5,7 @@ OmniBrain is an AI-powered internship project developed by our team. The project
 ## Team
 
 - Purvi  (Team Leader)
-- Narsimha
+- Narsimulu
 - Srikanth
 - Aayan
 
