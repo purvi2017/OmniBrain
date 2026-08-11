@@ -1,18 +1,55 @@
-# OmniBrain
+# OmniBrain – Agentic Multi-Modal RAG Orchestrator
 
-OmniBrain is an AI-powered internship project developed by our team. The project aims to build an intelligent system that helps users perform tasks efficiently through automation, data analysis, and smart recommendations.
+## Overview
 
-## Team
+OmniBrain is an AI-powered Agentic Multi-Modal RAG (Retrieval-Augmented Generation) system developed as part of the Axlero Solutions internship program.
 
-- Purvi  (Team Leader)
-- Narsimulu
-- Srikanth
-- Aayan
+The system is designed to process complex documents containing text, tables, charts, and images. Using multiple AI agents, OmniBrain can retrieve relevant information, perform intelligent reasoning, and generate accurate, context-aware responses.
 
-## Branches
+## Problem Statement
 
-- main
-- frontend
-- backend
-- ai-module
-- testing
+Traditional RAG systems struggle with:
+- Multi-modal documents containing text and images
+- Complex reasoning across multiple data sources
+- Accurate retrieval from large documents
+- Reducing AI hallucinations
+
+OmniBrain addresses these challenges through an agent-based architecture that combines retrieval, reasoning, and intelligent task routing.
+
+## Key Features
+
+- Multi-Modal Document Processing
+- PDF Text Extraction
+- Image Extraction and Analysis
+- Vector Database Integration
+- Agentic AI Workflow using LangGraph
+- Semantic Search
+- Context-Aware Question Answering
+- Hallucination Reduction through Grounded Retrieval
+- FastAPI Backend
+- Streamlit Frontend
+
+## Team Members
+
+| Name | Role |
+|--------|--------|
+| Purvi Patel | Team Leader & Integration |
+| Narsimulu | Backend Developer |
+| Srikanth | AI Module Developer |
+| Aayan | Frontend Developer |
+
+## Project Structure
+
+```text
+OmniBrain/
+│
+├── frontend/
+├── backend/
+├── ai-module/
+├── docs/
+├── tests/
+├── assets/
+│
+├── README.md
+├── requirements.txt
+└── .gitignore
