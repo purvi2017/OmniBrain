@@ -1,56 +1,49 @@
-# Daily Progress Report
+# Daily Progress
 
-## Date
-11 August 2026
+## Day 1
 
-## Team Progress
-
-### Purvi Patel (Team Lead)
-- Updated project README
+### Purvi
+- Created GitHub repository
+- Added collaborators
+- Created branches
+- Updated README
 - Created project documentation
-- Defined team roles and responsibilities
-- Assigned tasks to team members
-- Managed GitHub branches and workflow
 
-### Narsimha (Backend Developer)
-- Switched to backend branch
-- Verified FastAPI setup
-- Implemented PDF Upload API
-- Working on validation and error handling
+### Narsimha
+- Created backend branch
+- Setup FastAPI project
+- Added Health API
+- Added Upload API
 
-### Srikanth (AI Module Developer)
+### Srikanth
 - Created AI module structure
-- Added process_document.py
-- Added requirements.txt and README
-- Pushed initial AI module setup
+- Added parsers folder
+- Added embeddings folder
+- Added vector database folder
 
-### Aayan (Frontend Developer)
-- Frontend branch assigned
-- Setup instructions shared
+### Aayan
+- Joined frontend branch
+- Setup pending
+
+---
+
+## Day 2
+
+### Purvi
+- Reviewed backend progress
+- Reviewed AI module progress
+- Created integration plan
+- Updated project documentation
+
+### Narsimha
+- Improving upload API
+- Working on PDF validation
+- Working on exception handling
+
+### Srikanth
+- Testing document processing pipeline
+- Working on embeddings
+- Working on vector database integration
+
+### Aayan
 - Environment setup in progress
-
-## Repository Status
-- README completed
-- Documentation completed
-- Branches active
-- Initial backend setup available
-- AI module initialized
-
-## Next Day Plan
-
-### Backend
-- PDF validation
-- Exception handling
-- Route separation
-
-### AI Module
-- PDF extraction
-- Chunking implementation
-
-### Frontend
-- VS Code setup
-- Streamlit UI setup
-
-### Team Lead
-- Progress review
-- Integration planning
