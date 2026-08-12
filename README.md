@@ -34,7 +34,7 @@ OmniBrain addresses these challenges through an agent-based architecture that co
 | Name | Role |
 |--------|--------|
 | Purvi  | Team Leader & Integration |
-| Narsimulu | Backend Developer |
+| Narsimha | Backend Developer |
 | Srikanth | AI Module Developer |
 | Aayan | Frontend Developer |
 
