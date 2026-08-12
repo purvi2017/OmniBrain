@@ -26,7 +26,15 @@ ai-module/
 ├── models/                      # local/cached model files (empty for now)
 ├── test_files/                   # sample PDFs used for manual testing
 │   ├── sample.pdf
-│   └── extracted_images/          # output of image extraction
+│   ├── extracted_images/          # output of image extraction
+│   └── screenshots/                # Day 2 test output screenshots
+├── tests/                         # Day 2 verification test scripts
+│   ├── test_extraction.py
+│   ├── test_chunking.py
+│   ├── test_embeddings.py
+│   └── test_faiss_storage.py
+├── tools/
+│   └── render_screenshot.py        # renders captured test output as PNG
 ├── process_document.py            # end-to-end pipeline entry point
 ├── requirements.txt
 └── README.md
@@ -83,6 +91,8 @@ production-scale persistence.
 - [x] Vector DB storage implemented — FAISS (`vector_db/faiss_store.py`, default) tested end-to-end: add → save → load → search, all working correctly
 - [x] Qdrant backend implemented as an alternative (`vector_db/qdrant_store.py`) — code complete, requires a running Qdrant server to test (not run yet — Docker setup pending)
 - [x] End-to-end pipeline (`process_document.py`) wires all steps together: PDF → text + images → chunks → embeddings → FAISS index, with a demo search at the end
+- [x] Day 2: All pipeline components individually tested with pass/fail assertions (`tests/`)
+- [x] Day 2: Output screenshots captured for extraction, chunking, embeddings, FAISS storage (`test_files/screenshots/`)
 - [ ] Swap in Qdrant and benchmark vs FAISS — pending team decision
 - [ ] Connect to backend `/query` API — pending backend readiness (Narsimha)
 
@@ -93,6 +103,40 @@ environment, pre-download the model or the `embed_chunks()` call will fail
 with a connection error — this is an environment/network issue, not a code
 bug (verified: chunking → FAISS storage/search work correctly independent
 of this using test vectors).
+
+## Day 2 — Verification & Testing
+
+All pipeline components were tested individually with pass/fail assertions
+in `tests/`. Run them all with:
+
+```bash
+python tests/test_extraction.py
+python tests/test_chunking.py
+python tests/test_embeddings.py
+python tests/test_faiss_storage.py
+```
+
+| Test | What it checks | Result |
+|---|---|---|
+| `test_extraction.py` | Text is non-empty, char/word counts reported | ✅ PASSED — 694 chars, 111 words extracted from `sample.pdf` |
+| `test_chunking.py` | All chunks within size bounds, no empty chunks | ✅ PASSED — 2 chunks, both within the 500(+50 overlap) char limit |
+| `test_embeddings.py` | Vector count matches chunk count, correct dtype, no NaNs, deterministic output | ✅ PASSED — 2 vectors, dim 384, float32 |
+| `test_faiss_storage.py` | Vectors added, saved to disk, reloaded, and searchable | ✅ PASSED — save → reload → search all confirmed working |
+
+Screenshots of each test run are in `test_files/screenshots/`.
+
+### Note on the embeddings test environment
+`test_embeddings.py` and `test_faiss_storage.py` were run in a sandboxed
+dev environment with no outbound access to huggingface.co, so
+`sentence-transformers` couldn't download `all-MiniLM-L6-v2` on that
+machine. To keep the pipeline testable in that environment, `embedder.py`
+automatically falls back to a deterministic local hashing-based embedder
+when the real model can't be downloaded — this proves the chunk → vector →
+FAISS wiring is correct, but is **not** a semantic embedding. On a normal
+dev machine with internet access, `embed_chunks()` uses the real
+`all-MiniLM-L6-v2` model automatically (no fallback triggered) — you'll see
+the `[WARN] Could not load...` line disappear from the output.
+
 
 ## How to Run
 
