@@ -70,6 +70,14 @@
 - Improved Swagger documentation
 - Tested file size rejection (HTTP 413)
 
+- Created POST /query endpoint
+- Added QueryRequest schema
+- Added QueryResponse schema
+- Implemented query validation
+- Added Swagger documentation
+- Tested valid and invalid requests
+- Pushed backend updates to GitHub
+
 ### Srikanth
 - Completed document processing pipeline
 - Implemented PDF text extraction
