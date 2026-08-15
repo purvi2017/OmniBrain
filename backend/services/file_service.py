@@ -5,10 +5,11 @@ import uuid
 UPLOAD_DIR = "uploads"
 
 
-def save_file(file_content: bytes) -> tuple[str, str, int]:
+def save_file(file_content: bytes) -> tuple[str, str, int, str]:
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-    unique_filename = f"{uuid.uuid4()}.pdf"
+    document_id = str(uuid.uuid4())
+    unique_filename = f"{document_id}.pdf"
 
     file_path = os.path.join(
         UPLOAD_DIR,
@@ -20,4 +21,4 @@ def save_file(file_content: bytes) -> tuple[str, str, int]:
 
     file_size = len(file_content)
 
-    return unique_filename, file_path, file_size
+    return document_id, unique_filename, file_path, file_size

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from routes.upload import router as upload_router
 from routes.documents import router as documents_router
@@ -13,6 +14,16 @@ app = FastAPI(
         "Provides PDF upload, document listing, and query API "
         "structure for future AI integration."
     )
+)
+
+
+# CORS configuration for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
