@@ -69,7 +69,6 @@
 - Added GET /documents endpoint
 - Improved Swagger documentation
 - Tested file size rejection (HTTP 413)
-
 - Created POST /query endpoint
 - Added QueryRequest schema
 - Added QueryResponse schema
@@ -92,3 +91,40 @@
 - Documentation review support
 - UI feedback and testing support
 - Project discussion participation
+
+---
+
+## Day 4
+
+### Purvi
+- Developed OmniBrain frontend landing page
+- Added professional landing page structure
+- Added feature section for PDF Upload, AI Search, and Fast Retrieval
+- Created PDF upload page
+- Integrated frontend PDF upload with FastAPI `/upload` endpoint
+- Added PDF file selection and validation
+- Added upload success and error status handling
+- Tested PDF upload from the frontend
+- Created and pushed frontend updates to the `frontend` branch
+
+### Narsimha
+- Improved backend document management functionality
+- Implemented document deletion API
+- Added DELETE `/document/{document_id}` endpoint
+- Tested document deletion through Swagger
+- Verified successful document deletion response
+- Continued backend API improvements
+- Pushed backend updates to GitHub
+
+### Srikanth
+- Continued development of the AI/RAG module
+- Worked on document processing and retrieval components
+- Continued integration of embeddings and vector search
+- Worked on AI module integration with the backend workflow
+- Continued testing of the document retrieval pipeline
+
+### Aayan
+- Continued frontend development support
+- Reviewed frontend UI structure
+- Supported frontend testing and integration discussions
+- Participated in project coordination and development discussions
