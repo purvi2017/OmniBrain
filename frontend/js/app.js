@@ -23,11 +23,16 @@ async function uploadPDF() {
 
         console.log("Status:", response.status);
 
-        const text = await response.text();
+const text = await response.text();
 
-        console.log("Response:", text);
+console.log("Response:", text);
 
-        status.innerText = "Upload Successful ✅";
+if (!response.ok) {
+    throw new Error(text);
+}
+
+status.innerText = "Upload Successful ✅";
+
 
     } catch (error) {
 
