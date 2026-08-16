@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.upload import router as upload_router
 from routes.documents import router as documents_router
 from routes.query import router as query_router
+from routes.process import router as process_router
 
 
 app = FastAPI(
@@ -11,8 +12,9 @@ app = FastAPI(
     version="1.0.0",
     description=(
         "Backend API for OmniBrain. "
-        "Provides PDF upload, document listing, and query API "
-        "structure for future AI integration."
+        "Provides PDF upload, document listing, "
+        "document processing, and query API structure "
+        "for future AI integration."
     )
 )
 
@@ -53,3 +55,4 @@ def health():
 app.include_router(upload_router)
 app.include_router(documents_router)
 app.include_router(query_router)
+app.include_router(process_router)
