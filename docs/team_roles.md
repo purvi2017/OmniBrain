@@ -45,16 +45,4 @@
 * Retrieval and search functionality
 * AI pipeline optimization
 
----
 
-## Aayan
-
-**Role:** UI/UX Support & Testing
-
-### Responsibilities:
-
-* UI review and feedback
-* Frontend testing support
-* User experience suggestions
-* Integration testing assistance
-* Documentation review support
