@@ -21,10 +21,6 @@
 - Added embeddings folder
 - Added vector database folder
 
-### Aayan
-- Joined frontend branch
-- Setup pending
-
 ---
 
 ## Day 2
@@ -44,10 +40,7 @@
 - Testing document processing pipeline
 - Working on embeddings
 - Working on vector database integration
-
-### Aayan
-- Environment setup in progress
-
+  
 ---
 
 ## Day 3
@@ -87,11 +80,6 @@
 - Added Qdrant backend support
 - Updated AI module documentation
 
-### Aayan
-- Documentation review support
-- UI feedback and testing support
-- Project discussion participation
-
 ---
 
 ## Day 4
@@ -123,8 +111,63 @@
 - Worked on AI module integration with the backend workflow
 - Continued testing of the document retrieval pipeline
 
-### Aayan
-- Continued frontend development support
-- Reviewed frontend UI structure
-- Supported frontend testing and integration discussions
-- Participated in project coordination and development discussions
+  ----
+
+## Day 5
+
+### Purvi
+- Reviewed backend and AI module progress
+- Coordinated document management and RAG module tasks
+- Reviewed backend document upload, listing, and deletion workflow
+- Reviewed AI retrieval pipeline implementation
+- Updated project progress documentation
+- Planned next steps for backend and AI module integration
+
+### Narsimha
+- Improved POST /upload API response structure
+- Verified uploaded documents are stored with unique document IDs
+- Improved GET /documents API to return document details
+- Verified DELETE /document/{document_id} API with proper error handling
+- Added handling for invalid and non-existing document IDs
+- Tested Upload → List → Delete workflow through Swagger
+- Verified backend CORS configuration for frontend integration
+- Pushed Day 5 backend changes to the backend branch
+
+### Srikanth
+- Implemented RAG retrieval pipeline
+- Integrated all-MiniLM-L6-v2 embedding model
+- Generated 384-dimensional query embeddings
+- Integrated FAISS vector index for similarity search
+- Implemented relevant chunk retrieval
+- Added similarity threshold filtering
+- Tested RAG retrieval with multiple queries
+- Verified relevant context retrieval from the vector database
+
+## Day 6
+
+### Purvi
+- Coordinated Day 6 tasks for backend and AI modules
+- Reviewed Narsimha and Srikanth's Day 5 deliverables
+- Defined next steps for document processing and RAG integration
+- Planned backend and AI module integration workflow
+- Reviewed branch-wise project progress
+- Updated daily project progress documentation
+
+
+### Narsimha
+- Worked on document processing API using document_id
+- Added validation for invalid/non-existing document IDs
+- Added proper error handling for document processing
+- Prepared backend flow for PDF processing and AI module integration
+- Tested document processing workflow through Swagger
+- Pushed backend updates to GitHub
+
+
+### Srikanth
+- Worked on dynamic document processing for the RAG pipeline
+- Prepared PDF text extraction and text chunking workflow
+- Worked on embedding generation for processed document chunks
+- Continued FAISS-based document retrieval
+- Worked towards supporting real uploaded documents
+- Tested document retrieval with different queries
+- Prepared AI module for backend integration
