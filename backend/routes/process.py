@@ -14,12 +14,13 @@ router = APIRouter(
     summary="Process a document",
     description=(
         "Validates the document ID, locates the uploaded PDF, "
-        "and prepares the document for future AI processing."
+        "extracts PDF text, and prepares the document for "
+        "future AI and RAG processing."
     ),
     responses={
         400: {"description": "Invalid document file"},
         404: {"description": "Document not found"},
-        500: {"description": "Document processing failed"}
+        500: {"description": "PDF text extraction or processing failed"}
     }
 )
 def process_document_endpoint(document_id: str):
@@ -28,7 +29,8 @@ def process_document_endpoint(document_id: str):
 
         return {
             "status": "success",
-            "message": "Document is ready for processing",
+            "processing_status": document["status"],
+            "message": "Document processed successfully and is ready for RAG.",
             "document": document
         }
 
