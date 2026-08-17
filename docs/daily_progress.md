@@ -171,3 +171,26 @@
 - Worked towards supporting real uploaded documents
 - Tested document retrieval with different queries
 - Prepared AI module for backend integration
+
+
+Day 7
+Purvi
+Focused on exam preparation and temporarily reduced project involvement
+Coordinated Day 7 tasks with the Backend and AI team members
+Reviewed the planned Backend–AI integration workflow
+Kept track of team progress and pending development tasks
+Narsimha
+Continued development of the document processing workflow
+Worked on connecting document processing with the AI module
+Prepared document path and document_id flow for AI processing
+Worked on processing status and error handling
+Tested the document processing workflow through Swagger
+Prepared the backend for integration with the RAG pipeline
+Srikanth
+Worked on integrating the RAG retrieval pipeline with an LLM
+Prepared the query → retrieval → context → answer generation flow
+Passed retrieved document chunks as context for answer generation
+Worked on generating answers based on retrieved document content
+Added handling for cases with no relevant context
+Tested the RAG + LLM pipeline with different queries
+Prepared the AI module for backend integration
