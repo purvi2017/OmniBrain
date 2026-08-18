@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from schemas.query import QueryRequest, QueryResponse
+from services.query_service import process_query
 
 
 router = APIRouter(
@@ -12,15 +13,19 @@ router = APIRouter(
 @router.post(
     "",
     response_model=QueryResponse,
-    summary="Submit a query",
+    summary="Submit a document-based query",
     description=(
-        "Accepts a user query and returns a placeholder response. "
-        "AI processing, embeddings, and vector database integration "
-        "will be added in later development stages."
+        "Accepts a user query, validates it, searches the uploaded PDF "
+        "documents for relevant terms, and returns matching documents. "
+        "This provides a document-based query workflow that can later "
+        "be replaced or extended with AI/RAG retrieval."
     ),
     responses={
         400: {
-            "description": "Invalid query request"
+            "description": "Invalid or empty query"
+        },
+        500: {
+            "description": "Query processing failed"
         }
     }
 )
@@ -34,11 +39,7 @@ async def query_endpoint(request: QueryRequest):
                 detail="Query cannot be empty"
             )
 
-        return QueryResponse(
-            status="success",
-            query=query,
-            message="Query received successfully. AI processing is not implemented yet."
-        )
+        return process_query(query)
 
     except HTTPException:
         raise
