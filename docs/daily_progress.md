@@ -200,3 +200,77 @@
 - Added handling for cases with no relevant context
 - Tested the RAG + LLM pipeline with different queries
 - Prepared the AI module for backend integration
+
+Haan chatu ❤️ **same format mein Day 8 aur Day 9** de rahi hoon. Tumhara abhi project work nahi rakha hai, aur **Aayan ko Project 1 se hata diya hai**, so uska bhi task nahi hai.
+
+---
+
+# Daily Progress
+
+## Day 8
+
+### Purvi
+
+* Focused on exam preparation
+* Temporarily paused project development activities due to ongoing exams
+* Coordinated with team members regarding their individual tasks
+* Reviewed overall project progress
+
+### Narsimha
+
+* Improved `POST /query` API handling
+* Added handling for queries with no relevant documents
+* Improved query validation and error handling
+* Tested valid and invalid queries through Swagger
+* Verified `no_relevant_document` response for unrelated queries
+* Tested document-based query workflow
+* Improved API response structure
+* Continued backend API testing
+
+### Srikanth
+
+* Improved RAG retrieval pipeline
+* Tested FAISS-based document retrieval with multiple queries
+* Improved handling of irrelevant and out-of-domain queries
+* Added/verified similarity-based filtering
+* Tested multi-document retrieval
+* Verified retrieved context and source information
+* Tested RAG answer generation workflow
+* Continued AI module testing and validation
+
+---
+
+## Day 9
+
+### Purvi
+
+* Continued exam preparation
+* No active project development due to ongoing exams
+* Coordinated with team members and reviewed project progress
+* Kept track of backend and AI module development
+
+### Narsimha
+
+* Continued testing and refinement of the `/query` API
+* Tested queries against uploaded documents
+* Verified proper response when relevant documents are found
+* Verified proper handling when no relevant document is found
+* Improved backend exception handling
+* Verified API responses through Swagger
+* Reviewed backend readiness for future AI module integration
+* Continued maintaining the `backend` branch
+
+### Srikanth
+
+* Completed comprehensive testing of the RAG pipeline
+* Tested chunking, embeddings and FAISS vector storage
+* Tested RAG retrieval accuracy with multiple queries
+* Tested multi-document retrieval and similarity filtering
+* Verified empty-query and out-of-domain query handling
+* Tested grounded prompt and LLM answer generation
+* Completed end-to-end multi-document answer generation testing
+* **All 16 AI module tests passed successfully**
+* Verified the AI module is ready for the next integration stage
+
+---
+
