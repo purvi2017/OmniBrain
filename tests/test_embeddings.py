@@ -52,7 +52,7 @@ def test_embeddings():
     assert identical, "FAILED: Same input produced different vectors"
 
     print("\nRESULT: EMBEDDINGS TEST PASSED")
-    return vectors, chunks
+
 
 
 if __name__ == "__main__":

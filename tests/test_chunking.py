@@ -50,7 +50,7 @@ def test_chunking():
     print(f"[PASS] No empty chunks: {all(len(c.strip()) > 0 for c in chunks)}")
 
     print("\nRESULT: CHUNKING TEST PASSED")
-    return chunks
+
 
 
 if __name__ == "__main__":

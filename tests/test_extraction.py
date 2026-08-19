@@ -38,7 +38,7 @@ def test_pdf_extraction():
     print("--- End Preview ---\n")
 
     print("RESULT: PDF EXTRACTION TEST PASSED")
-    return text
+
 
 
 if __name__ == "__main__":
