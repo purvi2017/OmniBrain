@@ -6,6 +6,22 @@ UPLOAD_DIR = "uploads"
 
 
 def process_document(document_id: str):
+    # Validate document ID
+    if not document_id or not document_id.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="document_id is required"
+        )
+
+    document_id = document_id.strip()
+
+    # Prevent invalid path/file names
+    if "/" in document_id or "\\" in document_id or ".." in document_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid document_id"
+        )
+
     filename = f"{document_id}.pdf"
     file_path = os.path.join(UPLOAD_DIR, filename)
 
@@ -13,7 +29,7 @@ def process_document(document_id: str):
     if not os.path.exists(file_path):
         raise HTTPException(
             status_code=404,
-            detail="Document not found"
+            detail=f"Document not found: {document_id}"
         )
 
     # Check that it is a valid file
@@ -30,6 +46,9 @@ def process_document(document_id: str):
             detail="Only PDF documents can be processed"
         )
 
+    # Processing starts
+    processing_status = "processing"
+
     try:
         file_size = os.path.getsize(file_path)
 
@@ -40,12 +59,16 @@ def process_document(document_id: str):
 
         for page in pdf_document:
             page_text = page.get_text()
+
             if page_text:
                 text_parts.append(page_text)
 
         pdf_document.close()
 
         extracted_text = "\n".join(text_parts).strip()
+
+        # Processing completed successfully
+        processing_status = "completed"
 
         return {
             "document_id": document_id,
@@ -54,11 +77,18 @@ def process_document(document_id: str):
             "size": file_size,
             "text_length": len(extracted_text),
             "extracted_text": extracted_text,
-            "status": "completed"
+            "status": processing_status
         }
 
     except Exception as e:
+        # Processing failed
+        processing_status = "failed"
+
         raise HTTPException(
             status_code=500,
-            detail=f"PDF text extraction failed: {str(e)}"
+            detail={
+                "status": processing_status,
+                "message": "PDF text extraction failed",
+                "error": str(e)
+            }
         )

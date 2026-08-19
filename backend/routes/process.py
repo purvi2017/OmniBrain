@@ -11,19 +11,37 @@ router = APIRouter(
 
 @router.post(
     "/{document_id}",
-    summary="Process a document",
+    summary="Process an uploaded document",
     description=(
-        "Validates the document ID, locates the uploaded PDF, "
-        "extracts PDF text, and prepares the document for "
-        "future AI and RAG processing."
+        "Processes an uploaded PDF document using its document ID. "
+        "The API validates the document ID, checks whether the PDF exists, "
+        "extracts text from the PDF, and returns the processing status "
+        "and processed document details."
     ),
     responses={
-        400: {"description": "Invalid document file"},
-        404: {"description": "Document not found"},
-        500: {"description": "PDF text extraction or processing failed"}
+        200: {
+            "description": "Document processed successfully"
+        },
+        400: {
+            "description": (
+                "Invalid or missing document ID, or invalid document file"
+            )
+        },
+        404: {
+            "description": "Document not found"
+        },
+        500: {
+            "description": "Document processing or PDF extraction failed"
+        }
     }
 )
 def process_document_endpoint(document_id: str):
+    """
+    Process an uploaded PDF document.
+
+    Returns the document details, extracted text,
+    and processing status.
+    """
     try:
         document = process_document(document_id)
 
@@ -40,5 +58,8 @@ def process_document_endpoint(document_id: str):
     except Exception:
         raise HTTPException(
             status_code=500,
-            detail="Document processing failed"
+            detail={
+                "status": "failed",
+                "message": "Document processing failed"
+            }
         )
