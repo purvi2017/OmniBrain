@@ -201,11 +201,6 @@
 - Tested the RAG + LLM pipeline with different queries
 - Prepared the AI module for backend integration
 
-Haan chatu ❤️ **same format mein Day 8 aur Day 9** de rahi hoon. Tumhara abhi project work nahi rakha hai, aur **Aayan ko Project 1 se hata diya hai**, so uska bhi task nahi hai.
-
----
-
-# Daily Progress
 
 ## Day 8
 
