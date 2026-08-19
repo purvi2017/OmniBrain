@@ -61,6 +61,8 @@ class FaissStore:
         source: str = "",
         document_id: str = "",
         filename: str = "",
+        pages: Optional[List[int]] = None,
+        extra_metadata: Optional[List[Dict[str, Any]]] = None,
     ) -> None:
         """
         Add document chunk embeddings and metadata.
@@ -68,18 +70,18 @@ class FaissStore:
         Args:
             vectors:
                 NumPy array with shape (n, dim).
-
             chunks:
                 List of text chunks.
-
             source:
                 Original document path or source.
-
             document_id:
                 Unique identifier for the document.
-
             filename:
                 Original uploaded PDF filename.
+            pages:
+                Optional list of page numbers corresponding to each chunk.
+            extra_metadata:
+                Optional list of additional metadata dictionaries.
         """
 
         # Validate number of vectors and chunks
@@ -145,16 +147,19 @@ class FaissStore:
         start_chunk_id = len(self.metadata)
 
         for i, chunk in enumerate(chunks):
-
-            metadata = {
+            page_num = pages[i] if (pages is not None and i < len(pages)) else 1
+            meta = {
                 "text": chunk,
                 "source": source,
                 "document_id": document_id,
                 "filename": filename,
                 "chunk_id": start_chunk_id + i,
+                "page": page_num,
             }
+            if extra_metadata is not None and i < len(extra_metadata):
+                meta.update(extra_metadata[i])
 
-            self.metadata.append(metadata)
+            self.metadata.append(meta)
 
         print(
             f"[INFO] Added {len(chunks)} vectors "
@@ -170,6 +175,7 @@ class FaissStore:
         query_vector: np.ndarray,
         top_k: int = 5,
         document_id: Optional[str] = None,
+        min_score: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """
         Search for the most similar document chunks.
@@ -177,24 +183,15 @@ class FaissStore:
         Args:
             query_vector:
                 Query embedding with shape (dim,) or (1, dim).
-
             top_k:
                 Number of results to return.
-
             document_id:
                 Optional document ID filter.
+            min_score:
+                Optional minimum similarity score threshold.
 
         Returns:
-            List of dictionaries containing:
-
-            {
-                "text": "...",
-                "source": "...",
-                "document_id": "...",
-                "filename": "...",
-                "chunk_id": 0,
-                "score": 0.85
-            }
+            List of dictionaries containing metadata and score.
         """
 
         # Empty index
@@ -273,6 +270,10 @@ class FaissStore:
             ].copy()
 
             metadata["score"] = float(score)
+
+            # Optional minimum score threshold filtering
+            if min_score is not None and metadata["score"] < min_score:
+                continue
 
             # Optional document filtering
             if (

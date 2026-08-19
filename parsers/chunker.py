@@ -74,6 +74,43 @@ def chunk_text(text: str, chunk_size: int = 800, overlap: int = 100) -> List[str
     return chunks
 
 
+def chunk_pages(pages: List[dict], chunk_size: int = 800, overlap: int = 100) -> List[dict]:
+    """
+    Chunk page-separated text while tracking page numbers.
+
+    Args:
+        pages: List of dicts with {"page_number": int, "text": str}.
+        chunk_size: Target characters per chunk.
+        overlap: Character overlap.
+
+    Returns:
+        List of dicts: [{"text": str, "page_number": int, "chunk_index": int}]
+    """
+    if not pages:
+        return []
+
+    result = []
+    chunk_index = 0
+
+    for page in pages:
+        page_num = page.get("page_number", 1)
+        page_text = page.get("text", "")
+        page_chunks = chunk_text(page_text, chunk_size=chunk_size, overlap=overlap)
+
+        for text in page_chunks:
+            result.append(
+                {
+                    "text": text,
+                    "page_number": page_num,
+                    "chunk_index": chunk_index,
+                }
+            )
+            chunk_index += 1
+
+    return result
+
+
+
 def main():
     """Quick manual test of the chunker."""
     sample_text = (

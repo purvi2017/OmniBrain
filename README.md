@@ -2,41 +2,42 @@
 
 ## Overview
 
-The AI module is an enterprise-grade Retrieval-Augmented Generation (RAG) system that processes documents (such as PDFs), indexes their contents into a vector database (FAISS), and generates grounded, source-attributed answers using Large Language Models (Gemini API via `google-genai`).
+The AI module is an enterprise-grade Retrieval-Augmented Generation (RAG) system that processes multi-page documents (such as PDFs), indexes their contents into a FAISS vector database, and generates grounded, source-attributed answers using Large Language Models (Gemini API via `google-genai`).
 
 ---
 
-## RAG + LLM Expected Flow
+## RAG + LLM Architecture & Expected Flow
 
 ```text
 User Query
     ↓
 Query Embedding (all-MiniLM-L6-v2)
     ↓
-FAISS Retrieval (IndexFlatIP Cosine Similarity)
+Multi-Document FAISS Search (IndexFlatIP Cosine Similarity)
     ↓
-Relevance Filtering (Similarity Threshold >= min_score)
+Adaptive Threshold & Delta Filtering (min_score >= 0.35, max_drop <= 0.25)
     ↓
-Context Assembly (Numbered Chunks + Source Metadata)
+Page-Level Context Assembly (Numbered Chunks + Doc IDs + Page Numbers)
     ↓
-Gemini LLM (Grounded Context Prompt)
+Gemini LLM (Strict Grounding & Anti-Hallucination Prompt)
     ↓
-Generated Answer
+Grounded Answer Generation
     ↓
-Structured Response (Answer + Source Document Metadata)
+Structured Response (Answer + Page-Level Source Citations + Confidence Scores)
 ```
 
 ---
 
-## Key Features
+## Day 8 Improvements & Key Features
 
-- **Document Processing**: Robust PDF text extraction (pypdf/PyMuPDF) and sentence-boundary-preserving chunking.
-- **Dense Vector Embeddings**: 384-dimensional normalized embeddings via `sentence-transformers/all-MiniLM-L6-v2`.
-- **FAISS Vector Storage**: Fast inner product (cosine similarity) search with complete document metadata tracking (`document_id`, `filename`, `chunk_id`, `score`, `text`).
-- **Semantic Retrieval**: Top-K retrieval with relevance threshold filtering (`min_score`) to exclude irrelevant context.
-- **Context-Grounded LLM Generation**: Strict prompt design ensuring the LLM uses *only* retrieved facts without external hallucination.
-- **Missing Context & Out-of-Domain Fallback**: Deterministic, graceful fallback when no document context meets the relevance threshold.
-- **Structured Response Format**: Returns a JSON-compatible dictionary with generated answer, retrieval flags, and source document metadata.
+- **Multi-Document Ingestion**: Seamless ingestion and simultaneous indexing of multiple PDFs into a unified FAISS index with distinct `document_id`, `filename`, and `page` metadata.
+- **Adaptive Similarity Thresholding**:
+  - **Calibrated Baseline**: Default `min_score = 0.35` tuned for `all-MiniLM-L6-v2` cosine similarity.
+  - **Relative Score Drop Filtering**: `max_score_drop = 0.25` prevents low-relevance tail noise chunks from polluting LLM context even when larger `top_k` is requested.
+- **Page-Aware Extraction & Chunking**: `extract_pages_from_pdf()` and `chunk_pages()` retain page boundaries throughout chunking and indexing.
+- **Enhanced Source Citations**: Each retrieved source includes `document_id`, `filename`, `page`, `chunk_id`, `score`, `confidence` (`HIGH` / `MEDIUM` / `LOW`), and `text_preview`.
+- **Targeted Document Filtering**: Ability to constrain queries to a specific document via `--document-id`.
+- **Deterministic Out-of-Domain Rejection**: Returns a clean structured fallback when no relevant context passes the threshold.
 
 ---
 
@@ -47,17 +48,17 @@ ai-module/
 │
 ├── parsers/
 │   ├── __init__.py
-│   ├── pdf_extractor.py          # PDF text extraction
+│   ├── pdf_extractor.py          # PDF text & page extraction (pypdf/PyMuPDF)
 │   ├── image_extractor.py        # PDF image extraction
-│   └── chunker.py                # Overlapping text chunker
+│   └── chunker.py                # Page-aware & overlapping text chunker
 │
 ├── embeddings/
 │   ├── __init__.py
-│   └── embedder.py               # Sentence-Transformers embedder
+│   └── embedder.py               # Sentence-Transformers embedder (all-MiniLM-L6-v2)
 │
 ├── vector_db/
 │   ├── __init__.py
-│   ├── faiss_store.py            # FAISS vector store with metadata & persistence
+│   ├── faiss_store.py            # FAISS vector store with page tracking & persistence
 │   └── qdrant_store.py           # Optional Qdrant store
 │
 ├── tests/
@@ -68,17 +69,19 @@ ai-module/
 │   ├── test_faiss_storage.py     # FAISS storage & persistence tests
 │   ├── test_similarity_search.py # FAISS semantic search tests
 │   ├── test_chunk_optimization.py# Chunk size optimization benchmarks
-│   └── test_rag_llm.py           # Day 7 RAG + LLM end-to-end test suite
+│   ├── test_rag_llm.py           # RAG + LLM pipeline tests
+│   └── test_rag_retrieval_accuracy.py # Day 8 Multi-Doc & retrieval accuracy test suite
 │
 ├── test_files/
-│   └── sample.pdf                # Verification test document
+│   ├── sample.pdf                # Verification test document 1
+│   └── ai_architecture.pdf       # Multi-page test document 2
 │
 ├── tools/
 │   └── render_screenshot.py      # Terminal output screenshot renderer
 │
 ├── process_document.py           # Ingestion & index pipeline CLI
-├── rag_retriever.py              # Semantic retrieval pipeline
-├── rag_llm.py                    # Day 7 RAG + LLM Answer Generation pipeline
+├── rag_retriever.py              # Enhanced semantic retrieval pipeline
+├── rag_llm.py                    # Multi-document RAG + LLM pipeline
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Documentation
 ```
@@ -106,19 +109,19 @@ ai-module/
 
 ## Usage
 
-### 1. Run RAG + LLM Pipeline (CLI)
+### 1. Multi-Document RAG CLI
 
-Ask questions directly about single or multiple PDF documents:
+Ask questions across single or multiple PDF documents:
 
 ```powershell
-# Single document query
-python rag_llm.py test_files/sample.pdf --query "What is the purpose of this document?"
+# Multi-document query across sample.pdf and ai_architecture.pdf
+python rag_llm.py test_files/sample.pdf test_files/ai_architecture.pdf --query "How does the microservices architecture communicate?"
 
-# Multiple documents with custom retrieval parameters
-python rag_llm.py doc1.pdf doc2.pdf --query "What are the key findings?" --top-k 3 --min-score 0.30 --model gemini-2.5-flash
+# Constrain query to a specific document
+python rag_llm.py test_files/sample.pdf test_files/ai_architecture.pdf --query "What library is used for text extraction?" --document-id sample
 
-# Interactive mode (prompts for question in terminal)
-python rag_llm.py test_files/sample.pdf
+# Custom retrieval tuning parameters
+python rag_llm.py doc1.pdf doc2.pdf --query "What are the evaluation metrics?" --top-k 3 --min-score 0.35 --max-drop 0.25 --model gemini-2.5-flash
 ```
 
 ### 2. Programmatic Python API
@@ -126,43 +129,50 @@ python rag_llm.py test_files/sample.pdf
 ```python
 from rag_llm import RAGLLMPipeline
 
-# Initialize RAG + LLM pipeline
+# Initialize Multi-Doc RAG pipeline
 pipeline = RAGLLMPipeline(
     model_name="gemini-2.5-flash",
     top_k=3,
-    min_score=0.30,
+    min_score=0.35,
+    max_score_drop=0.25,
 )
 
-# Ingest and index PDF documents
-pipeline.load_documents(["test_files/sample.pdf"])
+# Index multiple PDF documents
+pipeline.load_documents([
+    "test_files/sample.pdf",
+    "test_files/ai_architecture.pdf"
+])
 
-# Query the pipeline
-response = pipeline.query("What library is used for text extraction?")
+# Query across all indexed documents
+response = pipeline.query("What are the three evaluation metrics for retrieval precision?")
 
 print("Answer:", response["answer"])
 print("Found Context:", response["found"])
-print("Sources:", response["sources"])
+for src in response["sources"]:
+    print(f"- {src['filename']} (Page {src['page']}) | Score: {src['score']} ({src['confidence']})")
 ```
 
 ---
 
 ## Structured Response Format
 
-Every query returns a structured dictionary:
+Every query produces a structured dictionary:
 
 ```json
 {
-  "query": "What library is used for text extraction?",
-  "answer": "Based on the retrieved context, pypdf is used for text extraction from the sample PDF.",
+  "query": "What are the core microservices in the OmniBrain AI architecture?",
+  "answer": "According to ai_architecture.pdf (Page 1), the core microservices include the Document Parser Service, the Embedding Generation Service, the Vector Storage Engine, and the LLM Orchestrator.",
   "found": true,
   "sources": [
     {
-      "source": "sample.pdf",
-      "filename": "sample.pdf",
-      "document_id": "sample",
-      "chunk_id": 0,
-      "score": 0.7852,
-      "text_preview": "This is a sample PDF document created for testing the AI module pipeline. It contains multiple sentences so that the chunking logic..."
+      "source": "ai_architecture.pdf",
+      "filename": "ai_architecture.pdf",
+      "document_id": "ai_architecture",
+      "chunk_id": 2,
+      "page": 1,
+      "score": 0.8446,
+      "confidence": "HIGH",
+      "text_preview": "AI System Architecture and Microservices Overview: The OmniBrain AI system is organized into decoupled microservices..."
     }
   ],
   "retrieved_chunks": 1,
@@ -170,13 +180,13 @@ Every query returns a structured dictionary:
 }
 ```
 
-### Handling Missing Context (Out-of-Domain)
+### Out-of-Domain Query Handling
 
-When a query cannot be answered from the uploaded document(s) (no chunks meet the relevance threshold):
+When a query has no relevant facts in the indexed documents:
 
 ```json
 {
-  "query": "What is the capital of Mars?",
+  "query": "What is the average surface temperature of Venus?",
   "answer": "I could not find relevant information in the uploaded documents to answer this question.",
   "found": false,
   "sources": [],
@@ -189,14 +199,14 @@ When a query cannot be answered from the uploaded document(s) (no chunks meet th
 
 ## Running Verification Tests
 
-Run the complete automated pytest suite:
+Run the complete automated pytest suite (16 tests):
 
 ```powershell
 pytest tests/ -v
 ```
 
-Run the dedicated Day 7 RAG + LLM test suite:
+Run the Day 8 Retrieval Accuracy test suite:
 
 ```powershell
-python tests/test_rag_llm.py
+python tests/test_rag_retrieval_accuracy.py
 ```

@@ -1,26 +1,29 @@
 """
 rag_llm.py
 ----------
-Day 7: RAG + LLM Answer Generation Pipeline
+Day 8: Enhanced RAG + LLM Pipeline with Multi-Document Retrieval,
+Adaptive Threshold Filtering, and Precision Source Attribution.
 
-Expected Flow:
+Flow:
     User Query
         ↓
-    Query Embedding
+    Query Embedding (all-MiniLM-L6-v2)
         ↓
-    FAISS Retrieval
+    Multi-Doc FAISS Retrieval
         ↓
-    Relevant Chunks
+    Adaptive Threshold Filtering (min_score & max_score_drop)
         ↓
-    LLM Context Assembly
+    Confidence Scoring & Deduplication
         ↓
-    Gemini LLM Generation
+    Context Assembly with Page & Doc Citations
         ↓
-    Answer + Sources Structured Output
+    Gemini LLM Generation (Strict Grounding Rules)
+        ↓
+    Answer + Rich Source Attributions
 
 Usage:
-    python rag_llm.py test_files/sample.pdf --query "What is the purpose of this document?"
-    python rag_llm.py doc1.pdf doc2.pdf --top-k 3 --min-score 0.30
+    python rag_llm.py test_files/sample.pdf test_files/ai_architecture.pdf --query "How does the vector database communicate?"
+    python rag_llm.py test_files/sample.pdf --top-k 3 --min-score 0.35
 
 Environment:
     GEMINI_API_KEY must be set in your environment to call the Gemini API.
@@ -34,19 +37,20 @@ from typing import List, Dict, Any, Optional
 
 import numpy as np
 
-from parsers.pdf_extractor import extract_text_from_pdf
-from parsers.chunker import chunk_text
+from parsers.pdf_extractor import extract_pages_from_pdf, extract_text_from_pdf
+from parsers.chunker import chunk_text, chunk_pages
 from embeddings.embedder import embed_chunks
 from vector_db.faiss_store import FaissStore
 
 
 # ------------------------------------------------------------
-# Configuration
+# Configuration & Calibrated Thresholds
 # ------------------------------------------------------------
 
 DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 DEFAULT_TOP_K = 3
-DEFAULT_MIN_SCORE = 0.30
+DEFAULT_MIN_SCORE = 0.35          # Calibrated for all-MiniLM-L6-v2 cosine similarity
+DEFAULT_MAX_SCORE_DROP = 0.25     # Maximum score drop allowed from top-1 match
 DEFAULT_CHUNK_SIZE = 800
 DEFAULT_OVERLAP = 100
 
@@ -55,20 +59,21 @@ NO_CONTEXT_MESSAGE = (
 )
 
 
+def get_confidence_label(score: float) -> str:
+    """Return a confidence categorization for a similarity score."""
+    if score >= 0.55:
+        return "HIGH"
+    elif score >= 0.35:
+        return "MEDIUM"
+    return "LOW"
+
+
 # ------------------------------------------------------------
 # Gemini Client
 # ------------------------------------------------------------
 
 def create_gemini_client(api_key: Optional[str] = None):
-    """
-    Initialize and return a Gemini API client using google-genai.
-
-    Args:
-        api_key: Optional Gemini API key. Defaults to GEMINI_API_KEY env var.
-
-    Returns:
-        genai.Client instance.
-    """
+    """Initialize and return a Gemini API client using google-genai."""
     key = api_key or os.getenv("GEMINI_API_KEY")
 
     if not key:
@@ -89,7 +94,7 @@ def create_gemini_client(api_key: Optional[str] = None):
 
 
 # ------------------------------------------------------------
-# PDF Document Processing
+# PDF Document Processing with Page-Level Metadata
 # ------------------------------------------------------------
 
 def process_pdf(
@@ -98,7 +103,7 @@ def process_pdf(
     overlap: int = DEFAULT_OVERLAP,
 ):
     """
-    Extract text, create chunks, and generate vector embeddings for a PDF.
+    Extract text page-by-page, create chunks, and generate vector embeddings.
 
     Args:
         pdf_path: Path to the input PDF file.
@@ -106,7 +111,7 @@ def process_pdf(
         overlap: Character overlap between consecutive chunks.
 
     Returns:
-        tuple: (chunks: List[str], vectors: np.ndarray)
+        tuple: (chunks: List[str], vectors: np.ndarray, page_numbers: List[int])
     """
     path = Path(pdf_path)
 
@@ -118,17 +123,27 @@ def process_pdf(
 
     print(f"\n[INFO] Processing document: {path.name}")
 
-    # 1. Extract text
-    text = extract_text_from_pdf(str(path))
-    if not text or not text.strip():
+    # 1. Extract pages
+    try:
+        pages = extract_pages_from_pdf(str(path))
+    except Exception:
+        # Fallback to single-block extraction if page extraction fails
+        text = extract_text_from_pdf(str(path))
+        pages = [{"page_number": 1, "text": text}]
+
+    if not pages:
         raise ValueError(f"No text could be extracted from {path.name}")
 
-    print(f"[INFO] Extracted text: {len(text)} characters")
+    total_chars = sum(len(p.get("text", "")) for p in pages)
+    print(f"[INFO] Extracted {len(pages)} page(s), total {total_chars} characters")
 
-    # 2. Chunk text
-    chunks = chunk_text(text, chunk_size=chunk_size, overlap=overlap)
-    if not chunks:
-        raise ValueError(f"No chunks were created from {path.name}")
+    # 2. Chunk pages
+    page_chunk_records = chunk_pages(pages, chunk_size=chunk_size, overlap=overlap)
+    if not page_chunk_records:
+        raise ValueError(f"No chunks could be created from {path.name}")
+
+    chunks = [r["text"] for r in page_chunk_records]
+    page_numbers = [r["page_number"] for r in page_chunk_records]
 
     print(f"[INFO] Created chunks: {len(chunks)}")
 
@@ -139,11 +154,11 @@ def process_pdf(
         f"{vectors.shape[0]} vectors x {vectors.shape[1]} dimensions"
     )
 
-    return chunks, vectors
+    return chunks, vectors, page_numbers
 
 
 # ------------------------------------------------------------
-# Build FAISS Store from Multiple PDFs
+# Multi-Document Store Ingestion
 # ------------------------------------------------------------
 
 def build_store(
@@ -167,20 +182,25 @@ def build_store(
 
     all_vectors = []
     all_chunks = []
+    all_pages = []
     document_metadata = []
 
     for pdf_path in pdf_paths:
         path = Path(pdf_path)
-        chunks, vectors = process_pdf(str(path), chunk_size=chunk_size, overlap=overlap)
+        chunks, vectors, pages = process_pdf(
+            str(path), chunk_size=chunk_size, overlap=overlap
+        )
 
         all_vectors.append(vectors)
         all_chunks.extend(chunks)
+        all_pages.extend(pages)
 
         document_metadata.append(
             {
                 "document_id": path.stem,
                 "filename": path.name,
                 "chunk_count": len(chunks),
+                "page_count": max(pages) if pages else 1,
                 "path": str(path.resolve()),
             }
         )
@@ -193,12 +213,12 @@ def build_store(
 
     store = FaissStore(dim=combined_vectors.shape[1])
 
-    # Add each document's vectors with its metadata
     offset = 0
     for doc in document_metadata:
         count = doc["chunk_count"]
         doc_vectors = combined_vectors[offset : offset + count]
         doc_chunks = all_chunks[offset : offset + count]
+        doc_pages = all_pages[offset : offset + count]
 
         store.add(
             vectors=doc_vectors,
@@ -206,6 +226,7 @@ def build_store(
             source=doc["filename"],
             document_id=doc["document_id"],
             filename=doc["filename"],
+            pages=doc_pages,
         )
         offset += count
 
@@ -213,7 +234,7 @@ def build_store(
 
 
 # ------------------------------------------------------------
-# Retrieval Layer
+# Adaptive Retrieval Layer & Threshold Tuning
 # ------------------------------------------------------------
 
 def retrieve_context(
@@ -221,18 +242,23 @@ def retrieve_context(
     query: str,
     top_k: int = DEFAULT_TOP_K,
     min_score: float = DEFAULT_MIN_SCORE,
+    max_score_drop: float = DEFAULT_MAX_SCORE_DROP,
+    document_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Generate embedding for query and retrieve relevant chunks from FAISS.
+    Generate embedding for query, retrieve chunks from FAISS,
+    and apply adaptive threshold filtering to eliminate low-relevance noise.
 
     Args:
         store: FAISS vector store instance.
         query: User question string.
         top_k: Maximum number of chunks to retrieve.
-        min_score: Minimum cosine similarity score threshold (0.0 to 1.0).
+        min_score: Minimum absolute cosine similarity threshold (0.0 to 1.0).
+        max_score_drop: Max allowable score drop from the top candidate.
+        document_id: Optional document ID to restrict search.
 
     Returns:
-        List of matching chunk dictionaries with score >= min_score.
+        List of filtered and ranked matching chunk dictionaries.
     """
     if not query or not query.strip():
         return []
@@ -241,27 +267,55 @@ def retrieve_context(
     print("QUERY")
     print("=" * 70)
     print(f"Query: {query}")
+    if document_id:
+        print(f"[FILTER] Target Document ID: {document_id}")
 
     # Generate query embedding
     query_vector = embed_chunks([query])
     print(f"[INFO] Query embedding shape: {query_vector.shape}")
 
     # Similarity search
-    results = store.search(query_vector[0], top_k=top_k)
-    print(f"[INFO] FAISS returned {len(results)} raw candidate result(s)")
+    raw_results = store.search(
+        query_vector[0],
+        top_k=top_k,
+        document_id=document_id,
+    )
+    print(f"[INFO] FAISS returned {len(raw_results)} raw candidate result(s)")
 
-    # Filter by relevance threshold
-    relevant_results = [
+    # 1. Apply absolute minimum similarity threshold
+    threshold_results = [
         result
-        for result in results
+        for result in raw_results
         if float(result.get("score", 0.0)) >= min_score
     ]
+
     print(
-        f"[INFO] Relevant results meeting score threshold (>= {min_score}): "
-        f"{len(relevant_results)}"
+        f"[INFO] Candidates meeting absolute threshold (>= {min_score:.2f}): "
+        f"{len(threshold_results)}"
     )
 
-    return relevant_results
+    if not threshold_results:
+        return []
+
+    # 2. Apply relative score drop filtering (keep only high-confidence cluster)
+    top_score = float(threshold_results[0].get("score", 0.0))
+    adaptive_results = [
+        r
+        for r in threshold_results
+        if (top_score - float(r.get("score", 0.0))) <= max_score_drop
+    ]
+
+    print(
+        f"[INFO] Candidates after adaptive relative drop filtering (delta <= {max_score_drop:.2f}): "
+        f"{len(adaptive_results)}"
+    )
+
+    # 3. Attach confidence tags
+    for r in adaptive_results:
+        score = float(r.get("score", 0.0))
+        r["confidence"] = get_confidence_label(score)
+
+    return adaptive_results
 
 
 # ------------------------------------------------------------
@@ -270,7 +324,7 @@ def retrieve_context(
 
 def prepare_context(results: List[Dict[str, Any]]) -> str:
     """
-    Format retrieved chunks into a clean, numbered context string for the LLM.
+    Format retrieved chunks into a clean, multi-document context string for LLM.
 
     Args:
         results: List of retrieved chunk dictionaries.
@@ -286,12 +340,14 @@ def prepare_context(results: List[Dict[str, Any]]) -> str:
         text = result.get("text", "").strip()
         source = result.get("source") or result.get("filename") or "Unknown"
         doc_id = result.get("document_id", "Unknown")
+        page = result.get("page", 1)
         score = float(result.get("score", 0.0))
+        confidence = result.get("confidence", "MEDIUM")
 
         context_parts.append(
             f"[Context Chunk {index}]\n"
-            f"Source Document: {source} (ID: {doc_id})\n"
-            f"Relevance Score: {score:.4f}\n"
+            f"Document: {source} (ID: {doc_id}) | Page: {page}\n"
+            f"Relevance Score: {score:.4f} ({confidence} Confidence)\n"
             f"Content:\n{text}"
         )
 
@@ -300,7 +356,7 @@ def prepare_context(results: List[Dict[str, Any]]) -> str:
 
 def build_grounded_prompt(query: str, context: str) -> str:
     """
-    Build the strict RAG prompt enforcing ground truth from retrieved context.
+    Build the strict RAG prompt enforcing grounded answer generation.
 
     Args:
         query: User question.
@@ -309,18 +365,18 @@ def build_grounded_prompt(query: str, context: str) -> str:
     Returns:
         Complete prompt string for the LLM.
     """
-    return f"""You are a precise, Retrieval-Augmented Generation (RAG) assistant.
+    return f"""You are a precise, multi-document Retrieval-Augmented Generation (RAG) assistant.
 
 Your task is to answer the user's question accurately using ONLY the retrieved document context provided below.
 
 Strict Grounding Rules:
-1. Base your answer strictly on the provided RETRIEVED DOCUMENT CONTEXT.
-2. Do NOT hallucinate or assume facts not directly stated in the context.
-3. Do NOT use external pre-trained knowledge that is absent from the context.
-4. If the context does not contain sufficient information to answer the question, state:
+1. Base your answer strictly on the facts present in the RETRIEVED DOCUMENT CONTEXT.
+2. If the context does not contain sufficient facts to answer the question, clearly state:
    "{NO_CONTEXT_MESSAGE}"
-5. Be concise, factual, and clear in your response.
-6. Do NOT mention internal rules or that you are following prompt instructions.
+3. Attribute facts to their respective source documents or pages when appropriate.
+4. Do NOT hallucinate, infer unstated claims, or rely on outside pre-trained knowledge.
+5. Provide a clear, concise, and professional answer.
+6. Do NOT mention internal prompting rules.
 
 USER QUESTION:
 {query}
@@ -385,30 +441,16 @@ def answer_query(
     query: str,
     top_k: int = DEFAULT_TOP_K,
     min_score: float = DEFAULT_MIN_SCORE,
+    max_score_drop: float = DEFAULT_MAX_SCORE_DROP,
+    document_id: Optional[str] = None,
     model_name: str = DEFAULT_GEMINI_MODEL,
 ) -> Dict[str, Any]:
     """
-    Execute end-to-end RAG flow:
-    Query -> Retrieval -> Filter -> Context Assembly -> LLM -> Structured Response.
-
-    Args:
-        client: Gemini client instance or callable.
-        store: FAISS vector store.
-        query: User query string.
-        top_k: Number of chunks to retrieve.
-        min_score: Similarity threshold.
-        model_name: Gemini model name.
+    Execute end-to-end multi-document RAG flow:
+    Query -> Embed -> Multi-Doc FAISS Search -> Adaptive Filter -> LLM -> Structured Response.
 
     Returns:
-        Dict containing:
-        {
-            "query": str,
-            "answer": str,
-            "found": bool,
-            "sources": List[Dict[str, Any]],
-            "retrieved_chunks": int,
-            "model": str
-        }
+        Dict containing answer, source citations with page numbers, scores, and metadata.
     """
     query = (query or "").strip()
     if not query:
@@ -421,15 +463,17 @@ def answer_query(
             "model": model_name,
         }
 
-    # Step 1 & 2: FAISS retrieval + relevance threshold
+    # Step 1: Retrieval + Adaptive Thresholding
     results = retrieve_context(
         store=store,
         query=query,
         top_k=top_k,
         min_score=min_score,
+        max_score_drop=max_score_drop,
+        document_id=document_id,
     )
 
-    # Case: No relevant document context found
+    # Case: No relevant context found
     if not results:
         return {
             "query": query,
@@ -440,7 +484,7 @@ def answer_query(
             "model": model_name,
         }
 
-    # Step 3: Prepare context
+    # Step 2: Prepare context
     context = prepare_context(results)
 
     print("\n" + "=" * 70)
@@ -448,7 +492,7 @@ def answer_query(
     print("=" * 70)
     print(context)
 
-    # Step 4: Generate LLM answer
+    # Step 3: Generate LLM answer
     print("\n" + "=" * 70)
     print(f"GENERATING ANSWER WITH LLM ({model_name})...")
     print("=" * 70)
@@ -460,7 +504,7 @@ def answer_query(
         model_name=model_name,
     )
 
-    # Step 5: Format source document information
+    # Step 4: Structured source attribution
     sources = []
     for result in results:
         sources.append(
@@ -469,7 +513,9 @@ def answer_query(
                 "filename": result.get("filename", result.get("source", "unknown")),
                 "document_id": result.get("document_id", ""),
                 "chunk_id": result.get("chunk_id", -1),
+                "page": result.get("page", 1),
                 "score": round(float(result.get("score", 0.0)), 4),
+                "confidence": result.get("confidence", "MEDIUM"),
                 "text_preview": result.get("text", "")[:150].replace("\n", " "),
             }
         )
@@ -485,12 +531,12 @@ def answer_query(
 
 
 # ------------------------------------------------------------
-# Object-Oriented Interface: RAGLLMPipeline
+# Object-Oriented Pipeline Interface
 # ------------------------------------------------------------
 
 class RAGLLMPipeline:
     """
-    Unified RAG + LLM Answer Generation Pipeline class.
+    Unified Multi-Document RAG + LLM Pipeline class.
     """
 
     def __init__(
@@ -500,12 +546,14 @@ class RAGLLMPipeline:
         model_name: str = DEFAULT_GEMINI_MODEL,
         top_k: int = DEFAULT_TOP_K,
         min_score: float = DEFAULT_MIN_SCORE,
+        max_score_drop: float = DEFAULT_MAX_SCORE_DROP,
     ):
         self.store = store
         self.client = client
         self.model_name = model_name
         self.top_k = top_k
         self.min_score = min_score
+        self.max_score_drop = max_score_drop
 
     def load_documents(
         self,
@@ -513,7 +561,7 @@ class RAGLLMPipeline:
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         overlap: int = DEFAULT_OVERLAP,
     ):
-        """Index PDF documents into internal FAISS store."""
+        """Index multiple PDF documents into internal FAISS store."""
         self.store, metadata = build_store(
             pdf_paths=pdf_paths,
             chunk_size=chunk_size,
@@ -522,7 +570,7 @@ class RAGLLMPipeline:
         return metadata
 
     def load_existing_index(self, index_prefix: str):
-        """Load an existing FAISS index from disk."""
+        """Load a previously persisted FAISS index."""
         self.store = FaissStore.load(index_prefix)
         return self.store
 
@@ -536,10 +584,12 @@ class RAGLLMPipeline:
         query: str,
         top_k: Optional[int] = None,
         min_score: Optional[float] = None,
+        max_score_drop: Optional[float] = None,
+        document_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Execute RAG query and return structured response."""
+        """Execute RAG query across indexed documents."""
         if self.store is None:
-            raise RuntimeError("FAISS store is not loaded. Call load_documents() or load_existing_index().")
+            raise RuntimeError("FAISS store is not loaded. Call load_documents() first.")
         if self.client is None:
             self.init_client()
 
@@ -549,6 +599,8 @@ class RAGLLMPipeline:
             query=query,
             top_k=top_k or self.top_k,
             min_score=min_score if min_score is not None else self.min_score,
+            max_score_drop=max_score_drop if max_score_drop is not None else self.max_score_drop,
+            document_id=document_id,
             model_name=self.model_name,
         )
 
@@ -558,7 +610,7 @@ class RAGLLMPipeline:
 # ------------------------------------------------------------
 
 def print_response(query: str, response: Dict[str, Any]):
-    """Display final structured RAG response."""
+    """Display structured RAG response with citation details."""
     print("\n" + "=" * 70)
     print("FINAL RAG RESPONSE")
     print("=" * 70)
@@ -566,15 +618,16 @@ def print_response(query: str, response: Dict[str, Any]):
     print(f"\n[QUESTION]\n{query}")
     print(f"\n[GENERATED ANSWER]\n{response['answer']}")
 
-    print("\n[SOURCE DOCUMENTS]")
+    print("\n[SOURCE CITATIONS]")
     if not response.get("sources"):
         print("  No relevant source documents found.")
     else:
         for i, src in enumerate(response["sources"], start=1):
-            print(f"  [{i}] Source File : {src['source']}")
-            print(f"      Document ID : {src.get('document_id', 'N/A')}")
-            print(f"      Similarity  : {src['score']:.4f}")
-            print(f"      Preview     : {src['text_preview']}...")
+            print(f"  [{i}] File       : {src['source']}")
+            print(f"      Document ID: {src.get('document_id', 'N/A')}")
+            print(f"      Page       : {src.get('page', 1)}")
+            print(f"      Similarity : {src['score']:.4f} ({src.get('confidence', 'N/A')})")
+            print(f"      Excerpt    : {src['text_preview']}...")
 
     print(f"\n[METADATA]")
     print(f"  Retrieved Chunks : {response.get('retrieved_chunks', 0)}")
@@ -582,7 +635,7 @@ def print_response(query: str, response: Dict[str, Any]):
     print(f"  Model Used       : {response.get('model', 'N/A')}")
 
     print("\n" + "=" * 70)
-    print("RESULT: RAG + LLM PIPELINE COMPLETED SUCCESSFULLY")
+    print("RESULT: RAG + LLM PIPELINE COMPLETED")
     print("=" * 70)
 
 
@@ -592,7 +645,7 @@ def print_response(query: str, response: Dict[str, Any]):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Day 7: RAG + LLM Answer Generation Pipeline"
+        description="Day 8: Enhanced Multi-Document RAG + LLM Answer Generation"
     )
 
     parser.add_argument(
@@ -608,6 +661,12 @@ def main():
         help="Question to ask about the uploaded document(s)",
     )
     parser.add_argument(
+        "--document-id",
+        type=str,
+        default=None,
+        help="Optional Document ID filter to constrain query to one document",
+    )
+    parser.add_argument(
         "--top-k",
         "-k",
         type=int,
@@ -620,6 +679,12 @@ def main():
         type=float,
         default=DEFAULT_MIN_SCORE,
         help=f"Minimum cosine similarity score threshold (default: {DEFAULT_MIN_SCORE})",
+    )
+    parser.add_argument(
+        "--max-drop",
+        type=float,
+        default=DEFAULT_MAX_SCORE_DROP,
+        help=f"Maximum allowed score drop from top candidate (default: {DEFAULT_MAX_SCORE_DROP})",
     )
     parser.add_argument(
         "--model",
@@ -644,25 +709,25 @@ def main():
     args = parser.parse_args()
 
     print("=" * 70)
-    print("DAY 7: RAG + LLM ANSWER GENERATION")
+    print("DAY 8: MULTI-DOCUMENT RAG + LLM PIPELINE")
     print("=" * 70)
 
     try:
-        # Step 1: Initialize Gemini Client
+        # Step 1: Client
         print("\n[STEP 1] Initializing Gemini LLM Client...")
         client = create_gemini_client()
-        print(f"[PASS] Gemini client initialized (Model: {args.model})")
+        print(f"[PASS] Gemini client ready (Model: {args.model})")
 
-        # Step 2: Ingest & Index PDFs
-        print("\n[STEP 2] Processing and Indexing PDF Documents...")
+        # Step 2: Index documents
+        print("\n[STEP 2] Ingesting and Indexing PDF Document(s)...")
         store, metadata = build_store(
             pdf_paths=args.pdfs,
             chunk_size=args.chunk_size,
             overlap=args.overlap,
         )
-        print("[PASS] Documents processed and FAISS store ready")
+        print(f"[PASS] {len(metadata)} document(s) indexed in FAISS store")
 
-        # Step 3: Get Query
+        # Step 3: Query
         query = args.query
         if not query:
             query = input("\nEnter your question: ").strip()
@@ -671,24 +736,26 @@ def main():
             print("[ERROR] Query cannot be empty.")
             sys.exit(1)
 
-        # Step 4: Execute RAG + LLM Answer Generation
+        # Step 4: Execute query
         response = answer_query(
             client=client,
             store=store,
             query=query,
             top_k=args.top_k,
             min_score=args.min_score,
+            max_score_drop=args.max_drop,
+            document_id=args.document_id,
             model_name=args.model,
         )
 
-        # Step 5: Print Response
+        # Step 5: Display
         print_response(query=query, response=response)
 
     except KeyboardInterrupt:
-        print("\n\n[INFO] Operation interrupted by user.")
+        print("\n\n[INFO] Operation stopped by user.")
         sys.exit(0)
     except Exception as exc:
-        print("\n[ERROR] RAG + LLM pipeline execution failed:")
+        print("\n[ERROR] Pipeline failed:")
         print(f"[ERROR] {exc}")
         sys.exit(1)
 

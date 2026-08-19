@@ -46,11 +46,12 @@ def test_pdf_processing_and_store_building():
 
     assert os.path.exists(SAMPLE_PDF), f"Sample PDF not found: {SAMPLE_PDF}"
 
-    chunks, vectors = process_pdf(SAMPLE_PDF, chunk_size=500, overlap=50)
+    chunks, vectors, pages = process_pdf(SAMPLE_PDF, chunk_size=500, overlap=50)
     assert len(chunks) > 0, "Failed: No chunks created from sample PDF"
     assert len(vectors) == len(chunks), "Failed: Vectors count does not match chunks count"
+    assert len(pages) == len(chunks), "Failed: Pages count does not match chunks count"
     assert vectors.shape[1] == 384, f"Failed: Expected vector dimension 384, got {vectors.shape[1]}"
-    print(f"[PASS] process_pdf extracted {len(chunks)} chunks and {len(vectors)} vectors")
+    print(f"[PASS] process_pdf extracted {len(chunks)} chunks across {len(set(pages))} page(s)")
 
     store, metadata = build_store([SAMPLE_PDF], chunk_size=500, overlap=50)
     assert store.count() == len(chunks), "Failed: FAISS store vector count mismatch"
@@ -84,7 +85,7 @@ def test_retrieval_and_relevance_filtering():
     # Test context preparation formatting
     context_str = prepare_context(results)
     assert "[Context Chunk 1]" in context_str
-    assert "Source Document: sample.pdf" in context_str
+    assert "Document: sample.pdf" in context_str
     assert "Relevance Score:" in context_str
     print("[PASS] Context string formatted correctly for LLM")
 

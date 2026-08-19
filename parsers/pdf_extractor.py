@@ -53,6 +53,37 @@ def extract_text_from_pdf(pdf_path: str) -> str:
     return "\n".join(all_text)
 
 
+def extract_pages_from_pdf(pdf_path: str):
+    """
+    Extract text content from a PDF file page by page.
+
+    Args:
+        pdf_path: Path to the PDF file.
+
+    Returns:
+        List of dicts: [{"page_number": int, "text": str}]
+    """
+    if not os.path.isfile(pdf_path):
+        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+
+    try:
+        reader = PdfReader(pdf_path)
+    except Exception as e:
+        raise ValueError(f"Could not read PDF '{pdf_path}': {e}")
+
+    pages = []
+    for page_num, page in enumerate(reader.pages, start=1):
+        page_text = (page.extract_text() or "").strip()
+        if page_text:
+            pages.append({"page_number": page_num, "text": page_text})
+        else:
+            print(f"[WARN] No extractable text on page {page_num} "
+                  f"(may be an image/scanned page).")
+
+    return pages
+
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python pdf_extractor.py <path_to_pdf>")
