@@ -1,5 +1,6 @@
 import os
 import re
+
 import fitz
 from fastapi import HTTPException
 
@@ -9,6 +10,7 @@ UPLOAD_DIR = "uploads"
 
 def _normalize_text(text: str) -> set[str]:
     words = re.findall(r"[a-zA-Z0-9]+", text.lower())
+
     return {
         word
         for word in words
@@ -49,8 +51,8 @@ def find_relevant_documents(query: str):
                 document_words
             )
 
-            # Require at least two matching query terms
-            # before considering a document relevant.
+            # Require at least two matching terms
+            # to consider a document relevant.
             if len(matched_words) >= 2:
                 relevant_documents.append({
                     "document_id": os.path.splitext(filename)[0],
@@ -79,15 +81,32 @@ def process_query(query: str):
             return {
                 "status": "no_relevant_document",
                 "query": query,
-                "message": "No relevant document was found for the query.",
-                "relevant_documents": []
+                "answer": (
+                    "No relevant document was found for the query. "
+                    "AI-generated answers will be available after "
+                    "RAG integration."
+                ),
+                "sources": [],
+                "documents": []
             }
+
+        sources = [
+            {
+                "document_id": document["document_id"],
+                "filename": document["filename"]
+            }
+            for document in relevant_documents
+        ]
 
         return {
             "status": "success",
             "query": query,
-            "message": "Relevant document(s) found for the query.",
-            "relevant_documents": relevant_documents
+            "answer": (
+                "Relevant document(s) were found for the query. "
+                "The backend is ready for future AI/RAG answer generation."
+            ),
+            "sources": sources,
+            "documents": relevant_documents
         }
 
     except Exception:

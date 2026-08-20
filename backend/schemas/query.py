@@ -10,18 +10,29 @@ class QueryRequest(BaseModel):
     )
 
 
-class RelevantDocument(BaseModel):
+class QuerySource(BaseModel):
     document_id: str = Field(
         ...,
-        description="Unique ID of the matching document."
+        description="Unique ID of the source document."
     )
     filename: str = Field(
         ...,
-        description="Name of the matching PDF document."
+        description="Name of the source PDF document."
+    )
+
+
+class QueryDocument(BaseModel):
+    document_id: str = Field(
+        ...,
+        description="Unique ID of the relevant document."
+    )
+    filename: str = Field(
+        ...,
+        description="Name of the relevant PDF document."
     )
     path: str = Field(
         ...,
-        description="Path of the matching document."
+        description="Path of the relevant document."
     )
     matched_terms: List[str] = Field(
         ...,
@@ -45,11 +56,18 @@ class QueryResponse(BaseModel):
         ...,
         description="The normalized user query."
     )
-    message: str = Field(
+    answer: str = Field(
         ...,
-        description="Result message describing the query operation."
+        description=(
+            "Current query answer or processing message. "
+            "AI-generated answers will be integrated later."
+        )
     )
-    relevant_documents: List[RelevantDocument] = Field(
+    sources: List[QuerySource] = Field(
         default_factory=list,
-        description="Documents considered relevant to the query."
+        description="Source documents supporting the query result."
+    )
+    documents: List[QueryDocument] = Field(
+        default_factory=list,
+        description="Relevant documents found for the query."
     )
