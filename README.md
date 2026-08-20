@@ -28,6 +28,19 @@ Structured Response (Answer + Page-Level Source Citations + Confidence Scores)
 
 ---
 
+## Day 10: FastAPI REST Microservice
+
+- **Deployable REST API**: `api.py` exposes the full RAG system as a production-ready HTTP microservice built with FastAPI and Uvicorn.
+- **Stateless & Scalable Endpoints**:
+  - `GET /health` — Liveness check, index statistics, active sessions.
+  - `POST /ingest` — Upload and index one or multiple PDF documents into FAISS.
+  - `POST /query` — Single-turn grounded RAG question answering.
+  - `POST /chat/{session_id}` — Stateful multi-turn conversational chat with history.
+  - `GET /sessions` — List active sessions and message counts.
+  - `GET /sessions/{session_id}` — Retrieve full conversation history.
+  - `DELETE /sessions/{session_id}` — Clear a session's history.
+- **Pydantic Validation**: Strict request/response schema validation for all endpoints.
+
 ---
 
 ## Day 9: Conversational RAG with Chat History & Session Management
@@ -103,7 +116,8 @@ ai-module/
 │   ├── test_chunk_optimization.py# Chunk size optimization benchmarks
 │   ├── test_rag_llm.py           # RAG + LLM pipeline tests
 │   ├── test_rag_retrieval_accuracy.py # Day 8 Multi-Doc & retrieval accuracy test suite
-│   └── test_rag_chat.py          # Day 9 Conversational RAG & session management tests
+│   ├── test_rag_chat.py          # Day 9 Conversational RAG & session management tests
+│   └── test_api.py               # Day 10 FastAPI REST API test suite
 │
 ├── test_files/
 │   ├── sample.pdf                # Verification test document 1
@@ -116,6 +130,7 @@ ai-module/
 ├── rag_retriever.py              # Enhanced semantic retrieval pipeline
 ├── rag_llm.py                    # Multi-document RAG + LLM pipeline
 ├── rag_chat.py                   # Day 9: Conversational RAG with chat history
+├── api.py                        # Day 10: FastAPI REST API microservice
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Documentation
 ```
@@ -143,7 +158,33 @@ ai-module/
 
 ## Usage
 
-### 1. Conversational RAG CLI (Day 9)
+### 1. REST API Server (Day 10)
+
+Start the Uvicorn REST server:
+
+```powershell
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
+```
+
+Access Interactive API Documentation (Swagger UI) at `http://localhost:8000/docs`.
+
+Example API requests:
+
+```powershell
+# Health check
+curl http://localhost:8000/health
+
+# Ingest PDFs
+curl -X POST http://localhost:8000/ingest -F "files=@test_files/sample.pdf" -F "files=@test_files/ai_architecture.pdf"
+
+# Single-turn query
+curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d "{\"query\": \"What are the core microservices?\"}"
+
+# Conversational chat
+curl -X POST http://localhost:8000/chat/session1 -H "Content-Type: application/json" -d "{\"message\": \"What is FAISS?\"}"
+```
+
+### 2. Conversational RAG CLI (Day 9)
 
 Start an interactive multi-turn chat session with one or more PDFs:
 
