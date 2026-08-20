@@ -38,7 +38,7 @@ from typing import List, Dict, Any, Optional
 import numpy as np
 
 from parsers.pdf_extractor import extract_pages_from_pdf, extract_text_from_pdf
-from parsers.chunker import chunk_text, chunk_pages
+from parsers.chunker import chunk_text, chunk_pages, verify_chunks, validate_and_filter_chunks
 from embeddings.embedder import embed_chunks
 from vector_db.faiss_store import FaissStore
 
@@ -145,7 +145,15 @@ def process_pdf(
     chunks = [r["text"] for r in page_chunk_records]
     page_numbers = [r["page_number"] for r in page_chunk_records]
 
-    print(f"[INFO] Created chunks: {len(chunks)}")
+    # Pre-embedding verification
+    verification = verify_chunks(chunks, max_chars=chunk_size)
+    if not verification["is_valid"]:
+        raise ValueError(f"Chunk verification failed for {path.name}: {verification['warnings']}")
+
+    print(
+        f"[INFO] Created {len(chunks)} chunks (verified: min={verification['min_chunk_length']}, "
+        f"max={verification['max_chunk_length']}, avg={verification['avg_chunk_length']} chars)"
+    )
 
     # 3. Generate embeddings
     vectors = embed_chunks(chunks)

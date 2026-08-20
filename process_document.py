@@ -16,7 +16,7 @@ import sys
 
 from parsers.pdf_extractor import extract_text_from_pdf
 from parsers.image_extractor import extract_images_from_pdf
-from parsers.chunker import chunk_text
+from parsers.chunker import chunk_text, verify_chunks, validate_and_filter_chunks
 from embeddings.embedder import embed_chunks
 from vector_db.faiss_store import FaissStore
 
@@ -41,8 +41,20 @@ def process_document(pdf_path: str, chunk_size: int = 800, overlap: int = 100,
 
     # 3. Chunk text
     print(f"[STEP 3] Chunking text (chunk_size={chunk_size}, overlap={overlap})...")
-    chunks = chunk_text(text, chunk_size=chunk_size, overlap=overlap)
-    print(f"[STEP 3] Done. Created {len(chunks)} chunks.\n")
+    raw_chunks = chunk_text(text, chunk_size=chunk_size, overlap=overlap)
+    chunks = validate_and_filter_chunks(raw_chunks, min_chars=1)
+    
+    # Verify chunks before embedding
+    verification = verify_chunks(chunks, max_chars=chunk_size)
+    print(f"[STEP 3] Done. Created {len(chunks)} chunks.")
+    print(f"        Verification: valid={verification['is_valid']}, "
+          f"min_len={verification['min_chunk_length']}, "
+          f"max_len={verification['max_chunk_length']}, "
+          f"avg_len={verification['avg_chunk_length']} chars.\n")
+
+    if not chunks or not verification["is_valid"]:
+        print(f"[ERROR] Chunk validation failed. Warnings: {verification['warnings']}")
+        return None
 
     # 4. Generate embeddings
     print(f"[STEP 4] Generating embeddings for {len(chunks)} chunks...")
@@ -62,6 +74,7 @@ def process_document(pdf_path: str, chunk_size: int = 800, overlap: int = 100,
         "chunks": chunks,
         "vectors": vectors,
         "store": store,
+        "verification": verification,
     }
 
 

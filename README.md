@@ -28,8 +28,17 @@ Structured Response (Answer + Page-Level Source Citations + Confidence Scores)
 
 ---
 
-## Day 8 Improvements & Key Features
+## Day 8 & Document Chunking Engine Improvements
 
+- **Intelligent Sentence Boundary Tokenization**:
+  - Sentence splitter accurately protects honorifics/titles (`Dr.`, `Mr.`, `Mrs.`, `Prof.`), Latin abbreviations (`e.g.`, `i.e.`, `et al.`, `vs.`, `cf.`), citations & technical terms (`Fig.`, `Tab.`, `Vol.`, `Inc.`, `Ltd.`), decimal numbers (`3.14`, `$14.50`), URLs, and emails.
+  - Properly respects list items (`1.`, `2.`, `•`, `-`) and paragraph breaks without premature sentence fragmentation.
+- **Word-Safe & Sentence-Aware Overlap**:
+  - Overlap slices strictly respect word and sentence boundaries to avoid slicing words mid-token, maintaining full semantic fidelity across chunk windows.
+- **Graceful Edge Case Handling**:
+  - Handles empty, whitespace-only, `None`, very short texts (single words / short sentences), and oversized unbroken paragraphs cleanly.
+- **Pre-Embedding Chunk Verification**:
+  - `verify_chunks()` and `validate_and_filter_chunks()` audit and sanitize chunks prior to embedding, verifying bounds, lengths, and non-emptiness.
 - **Multi-Document Ingestion**: Seamless ingestion and simultaneous indexing of multiple PDFs into a unified FAISS index with distinct `document_id`, `filename`, and `page` metadata.
 - **Adaptive Similarity Thresholding**:
   - **Calibrated Baseline**: Default `min_score = 0.35` tuned for `all-MiniLM-L6-v2` cosine similarity.
@@ -199,13 +208,19 @@ When a query has no relevant facts in the indexed documents:
 
 ## Running Verification Tests
 
-Run the complete automated pytest suite (16 tests):
+Run the complete automated pytest suite (25 tests covering chunking, embeddings, extraction, FAISS storage, RAG retrieval, and accuracy):
 
 ```powershell
 pytest tests/ -v
 ```
 
-Run the Day 8 Retrieval Accuracy test suite:
+Run the Chunk Size and Overlap Optimization Multi-PDF benchmark:
+
+```powershell
+python tests/test_chunk_optimization.py
+```
+
+Run the Multi-Doc Retrieval Accuracy test suite:
 
 ```powershell
 python tests/test_rag_retrieval_accuracy.py
