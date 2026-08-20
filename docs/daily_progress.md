@@ -269,3 +269,35 @@
 
 ---
 
+##Day 10
+
+###Purvi
+
+- Continued exam preparation
+- No active project development due to ongoing exams
+- Reviewed team progress and pending tasks
+- Coordinated with Backend and AI team members
+  
+###Narsimha
+
+- Improved POST /query API response structure
+- Added proper handling for answer and source information
+- Tested queries with relevant and irrelevant documents
+- Improved error handling for query processing
+- Tested empty and invalid queries through Swagger
+- Updated query API documentation and response schema
+- Prepared the backend query API for future AI integration
+- Committed and pushed changes to the backend branch
+  
+###Srikanth
+
+- Prepared the AI/RAG module for backend integration
+- Defined input and output structure for the RAG pipeline
+- Improved query-to-answer processing flow
+- Added relevant source/document information to the response
+- Tested AI module with multiple document-based queries
+- Verified handling of irrelevant queries and missing context
+- Ran the complete AI module test suite
+- Verified that existing tests continue to pass
+- Committed and pushed changes to the ai-module branch
+
