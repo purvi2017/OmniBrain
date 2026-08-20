@@ -28,6 +28,29 @@ Structured Response (Answer + Page-Level Source Citations + Confidence Scores)
 
 ---
 
+---
+
+## Day 9: Conversational RAG with Chat History & Session Management
+
+- **Multi-Turn Conversation**: `rag_chat.py` wraps the Day 8 pipeline with a `ChatSession` that tracks Q&A history across turns, enabling natural follow-up questions like *"What else does it say about that?"*
+- **History-Aware Prompting**: Each LLM call receives a sliding window of prior turns (configurable `--history-window`) injected above the retrieved document context, so the model can resolve pronoun references without hallucinating.
+- **`ChatMessage` Data Model**: Typed dataclass (`role`, `content`, `timestamp`, `sources`) for structured message representation.
+- **`ChatSession` Manager**:
+  - `add_message()` — append user or assistant turns with strict role validation.
+  - `get_window()` — return the last N complete Q&A turn pairs for prompt injection.
+  - `get_history_prompt()` — format the window as a human-readable block.
+  - `clear()` — reset history without losing the session object.
+  - `turn_count()` — count complete Q&A pairs.
+- **Session Persistence**: `save()` / `load()` serialise full conversation history to JSON, enabling sessions to resume across runs.
+- **`ConversationalRAGPipeline`**: Object-oriented interface integrating `ChatSession` with `RAGLLMPipeline`.
+  - `chat()` — single-method entry point: retrieve → inject history → generate answer → record turn.
+  - `reset()` — clear session history.
+  - `save_session()` / `load_session()` — persist and restore sessions.
+- **Interactive REPL CLI**: Built-in commands: `/reset`, `/save`, `/history`, `/quit`.
+- **Strict Grounding Preserved**: History is injected for reference resolution only; all facts must still come from the retrieved document context.
+
+---
+
 ## Day 8 & Document Chunking Engine Improvements
 
 - **Intelligent Sentence Boundary Tokenization**:
@@ -79,7 +102,8 @@ ai-module/
 │   ├── test_similarity_search.py # FAISS semantic search tests
 │   ├── test_chunk_optimization.py# Chunk size optimization benchmarks
 │   ├── test_rag_llm.py           # RAG + LLM pipeline tests
-│   └── test_rag_retrieval_accuracy.py # Day 8 Multi-Doc & retrieval accuracy test suite
+│   ├── test_rag_retrieval_accuracy.py # Day 8 Multi-Doc & retrieval accuracy test suite
+│   └── test_rag_chat.py          # Day 9 Conversational RAG & session management tests
 │
 ├── test_files/
 │   ├── sample.pdf                # Verification test document 1
@@ -91,6 +115,7 @@ ai-module/
 ├── process_document.py           # Ingestion & index pipeline CLI
 ├── rag_retriever.py              # Enhanced semantic retrieval pipeline
 ├── rag_llm.py                    # Multi-document RAG + LLM pipeline
+├── rag_chat.py                   # Day 9: Conversational RAG with chat history
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Documentation
 ```
@@ -118,7 +143,61 @@ ai-module/
 
 ## Usage
 
-### 1. Multi-Document RAG CLI
+### 1. Conversational RAG CLI (Day 9)
+
+Start an interactive multi-turn chat session with one or more PDFs:
+
+```powershell
+# Interactive conversational session with two documents
+python rag_chat.py test_files/sample.pdf test_files/ai_architecture.pdf
+
+# Custom history window and score threshold
+python rag_chat.py test_files/sample.pdf --history-window 5 --min-score 0.35
+
+# Auto-save session on exit and resume it next time
+python rag_chat.py test_files/sample.pdf --save-session chat_sessions/my_session.json
+python rag_chat.py test_files/sample.pdf --load-session chat_sessions/my_session.json
+```
+
+In-session commands:
+
+| Command | Action |
+|---------|--------|
+| `/reset` | Clear conversation history |
+| `/save` | Save current session to JSON |
+| `/history` | Show prior turns in terminal |
+| `/quit` | Exit and (optionally) save |
+
+### 2. Conversational Python API
+
+```python
+from rag_chat import ConversationalRAGPipeline
+
+pipeline = ConversationalRAGPipeline(
+    model_name="gemini-2.5-flash",
+    top_k=3,
+    min_score=0.35,
+    history_window=6,
+)
+
+pipeline.load_documents([
+    "test_files/sample.pdf",
+    "test_files/ai_architecture.pdf"
+])
+
+# Turn 1
+r1 = pipeline.chat("What are the core microservices in the OmniBrain AI architecture?")
+print(r1["answer"])
+
+# Turn 2 — follow-up resolved using history
+r2 = pipeline.chat("Which of those communicates directly with Gemini?")
+print(r2["answer"])   # Knows 'those' refers to the microservices from Turn 1
+
+# Persist session
+pipeline.save_session("chat_sessions/session1.json")
+```
+
+### 3. Multi-Document RAG CLI (Day 8)
 
 Ask questions across single or multiple PDF documents:
 
@@ -208,10 +287,16 @@ When a query has no relevant facts in the indexed documents:
 
 ## Running Verification Tests
 
-Run the complete automated pytest suite (25 tests covering chunking, embeddings, extraction, FAISS storage, RAG retrieval, and accuracy):
+Run the complete automated pytest suite (38 tests covering chunking, embeddings, extraction, FAISS storage, RAG retrieval, accuracy, and conversational RAG):
 
 ```powershell
 pytest tests/ -v
+```
+
+Run only the Day 9 conversational RAG test suite:
+
+```powershell
+pytest tests/test_rag_chat.py -v
 ```
 
 Run the Chunk Size and Overlap Optimization Multi-PDF benchmark:
