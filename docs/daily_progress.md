@@ -301,3 +301,29 @@
 - Verified that existing tests continue to pass
 - Committed and pushed changes to the ai-module branch
 
+## Day 11
+
+### Narsimha
+
+- Improved backend document processing workflow
+- Refined /process/{document_id} API handling
+- Added proper validation for document processing requests
+- Tested processing of valid uploaded documents
+- Added handling for invalid or non-existing document_id
+- Verified document status and processing responses through Swagger
+- Improved API error handling and response messages
+- Tested the complete Upload → Process → Query backend flow
+- Updated backend documentation and pushed changes to the backend branch
+  
+### Srikanth
+
+- Continued improvement of the RAG pipeline
+- Worked on improving retrieval quality for document-based queries
+- Tested retrieval with different similarity thresholds
+- Verified relevant chunk selection from uploaded documents
+- Improved source/document metadata handling in retrieved results
+- Tested RAG pipeline with multiple queries and documents
+- Verified no-relevant-context handling
+- Re-ran the AI module test suite after improvements
+- Updated AI module documentation and pushed changes to the ai-module branch
+
