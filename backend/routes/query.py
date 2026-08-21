@@ -13,22 +13,26 @@ router = APIRouter(
 @router.post(
     "",
     response_model=QueryResponse,
-    summary="Submit a document-based query",
+    summary="Submit a query for AI processing",
     description=(
-        "Accepts a user query, validates it, searches uploaded PDF "
-        "documents for relevant terms, and returns an answer placeholder, "
-        "source information, and relevant document details. "
-        "The response is prepared for future AI/RAG integration."
+        "Accepts and validates a user query, identifies relevant "
+        "uploaded documents, prepares the primary source document "
+        "and relevant context, and returns a structured response "
+        "for future AI-module integration. The AI module can use "
+        "the query, document ID, source document, and relevant "
+        "context to generate the final answer."
     ),
     responses={
         400: {
-            "description": "Invalid or empty query"
+            "description": "Query cannot be empty"
         },
         422: {
             "description": "Missing or invalid query field"
         },
         500: {
-            "description": "Query or AI/RAG processing failure"
+            "description": (
+                "Query processing or AI-module integration failure"
+            )
         }
     }
 )
@@ -50,5 +54,5 @@ async def query_endpoint(request: QueryRequest):
     except Exception:
         raise HTTPException(
             status_code=500,
-            detail="Failed to process query request"
+            detail="Failed to process query for AI integration"
         )

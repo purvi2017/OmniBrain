@@ -59,13 +59,30 @@ class QueryResponse(BaseModel):
     answer: str = Field(
         ...,
         description=(
-            "Current query answer or processing message. "
-            "AI-generated answers will be integrated later."
+            "Answer returned by the query processing layer. "
+            "This will be supplied by the AI module after integration."
+        )
+    )
+    source_document: str = Field(
+        ...,
+        description=(
+            "Primary source document used for the query result."
+        )
+    )
+    document_id: str = Field(
+        ...,
+        description="Document ID of the primary source document."
+    )
+    relevant_context: str = Field(
+        ...,
+        description=(
+            "Relevant document context identified for the query. "
+            "This field is prepared for future AI/RAG integration."
         )
     )
     sources: List[QuerySource] = Field(
         default_factory=list,
-        description="Source documents supporting the query result."
+        description="All source documents supporting the query result."
     )
     documents: List[QueryDocument] = Field(
         default_factory=list,
