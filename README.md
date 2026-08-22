@@ -9,22 +9,35 @@ The AI module is an enterprise-grade Retrieval-Augmented Generation (RAG) system
 ## RAG + LLM Architecture & Expected Flow
 
 ```text
-User Query
-    ↓
+Backend Query
+      ↓
+AI Module
+      ↓
 Query Embedding (all-MiniLM-L6-v2)
-    ↓
+      ↓
 Multi-Document FAISS Search (IndexFlatIP Cosine Similarity)
-    ↓
+      ↓
 Adaptive Threshold & Delta Filtering (min_score >= 0.35, max_drop <= 0.25)
-    ↓
-Page-Level Context Assembly (Numbered Chunks + Doc IDs + Page Numbers)
-    ↓
-Gemini LLM (Strict Grounding & Anti-Hallucination Prompt)
-    ↓
-Grounded Answer Generation
-    ↓
-Structured Response (Answer + Page-Level Source Citations + Confidence Scores)
+      ↓
+Relevant Context Assembly (Numbered Chunks + Doc IDs + Page Numbers)
+      ↓
+LLM Generation (Strict Grounding Prompt)
+      ↓
+Answer + Sources (Structured Attributions & Page-Level Citations)
 ```
+
+---
+
+## Day 11: AI Module Interface and RAG Response Standardization
+
+- **Standardized Data Schemas (`schemas.py`)**: Defines clean Pydantic and Python data structures for backend integration:
+  - `SourceAttribution`: Source file, filename, document ID, chunk ID, page number, similarity score, confidence label, and text preview.
+  - `RAGQueryInput` / `RAGQueryOutput`: Typed payloads for single-turn backend queries and responses.
+  - `ChatTurnInput` / `ChatTurnOutput`: Typed payloads for stateful conversational chat turns.
+- **Backend Query Preparation**: Programmatic Python and REST API interfaces ready to consume queries from downstream microservices.
+- **Strict Response Standardization**: Standardized dictionary and object responses containing generated answers, source documents, document IDs, chunk counts, and text previews.
+- **Deterministic No-Context Handling**: Unmatched or out-of-domain queries return `found=False`, empty sources `[]`, 0 retrieved chunks, and explicit refusal message.
+- **Expanded Integration Test Suite (`tests/test_integration_queries.py`)**: Multi-document Q&A testing across multiple PDF sources (`sample.pdf`, `ai_architecture.pdf`, `market_analysis_2026.pdf`).
 
 ---
 
@@ -115,17 +128,20 @@ ai-module/
 │   ├── test_similarity_search.py # FAISS semantic search tests
 │   ├── test_chunk_optimization.py# Chunk size optimization benchmarks
 │   ├── test_rag_llm.py           # RAG + LLM pipeline tests
-│   ├── test_rag_retrieval_accuracy.py # Day 8 Multi-Doc & retrieval accuracy test suite
-│   ├── test_rag_chat.py          # Day 9 Conversational RAG & session management tests
-│   └── test_api.py               # Day 10 FastAPI REST API test suite
+│   ├── test_rag_retrieval_accuracy.py # Multi-Doc & retrieval accuracy test suite
+│   ├── test_rag_chat.py          # Conversational RAG & session management tests
+│   ├── test_api.py               # FastAPI REST API test suite
+│   └── test_integration_queries.py # Day 11 Integration & Backend interface test suite
 │
 ├── test_files/
 │   ├── sample.pdf                # Verification test document 1
-│   └── ai_architecture.pdf       # Multi-page test document 2
+│   ├── ai_architecture.pdf       # Multi-page test document 2
+│   └── market_analysis_2026.pdf  # Day 11 Financial & market analysis test document
 │
 ├── tools/
 │   └── render_screenshot.py      # Terminal output screenshot renderer
 │
+├── schemas.py                    # Day 11: Standardized Data Contracts & Schemas
 ├── process_document.py           # Ingestion & index pipeline CLI
 ├── rag_retriever.py              # Enhanced semantic retrieval pipeline
 ├── rag_llm.py                    # Multi-document RAG + LLM pipeline
