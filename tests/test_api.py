@@ -128,7 +128,7 @@ def test_health_before_ingest(client):
     assert body["indexed_vectors"] == 0
     assert body["active_sessions"] == 0
     assert "model" in body
-    print(f"[PASS] /health → status=ok, indexed_vectors=0, model={body['model']}")
+    print(f"[PASS] /health -> status=ok, indexed_vectors=0, model={body['model']}")
 
 
 def test_health_after_ingest(ingested_client):
@@ -142,7 +142,7 @@ def test_health_after_ingest(ingested_client):
     body = resp.json()
     assert body["status"] == "ok"
     assert body["indexed_vectors"] > 0
-    print(f"[PASS] /health → indexed_vectors={body['indexed_vectors']}")
+    print(f"[PASS] /health -> indexed_vectors={body['indexed_vectors']}")
 
 
 # ---------------------------------------------------------------------------
@@ -171,7 +171,7 @@ def test_ingest_single_pdf(client):
     assert body["total_chunks"] > 0
     assert body["total_vectors"] > 0
     print(
-        f"[PASS] Ingested 1 PDF → "
+        f"[PASS] Ingested 1 PDF -> "
         f"{body['total_chunks']} chunks, {body['total_vectors']} vectors"
     )
 
@@ -199,7 +199,7 @@ def test_ingest_multiple_pdfs(client):
     assert len(body["documents"]) == 2
     doc_ids = {d["document_id"] for d in body["documents"]}
     assert doc_ids == {"sample", "ai_architecture"}
-    print(f"[PASS] Ingested 2 PDFs → {body['total_vectors']} total vectors")
+    print(f"[PASS] Ingested 2 PDFs -> {body['total_vectors']} total vectors")
 
 
 def test_ingest_non_pdf_rejected(client):
@@ -242,7 +242,7 @@ def test_query_response_schema(ingested_client):
     assert "model" in body
     assert body["query"] == "What library is used for text extraction?"
     print(
-        f"[PASS] /query → found={body['found']}, "
+        f"[PASS] /query -> found={body['found']}, "
         f"retrieved_chunks={body['retrieved_chunks']}, "
         f"sources={len(body['sources'])}"
     )
@@ -284,7 +284,7 @@ def test_query_out_of_domain(ingested_client):
 def test_query_before_ingest_returns_503(client):
     """POST /query before any ingestion returns HTTP 503."""
     print("=" * 60)
-    print("TEST: POST /query — before ingest → 503")
+    print("TEST: POST /query -- before ingest -> 503")
     print("=" * 60)
 
     resp = client.post("/query", json={"query": "What is this?"})
@@ -317,7 +317,7 @@ def test_chat_first_turn(ingested_client):
     assert "sources" in body
     assert "retrieved_chunks" in body
     print(
-        f"[PASS] First chat turn → session_id={body['session_id']}, "
+        f"[PASS] First chat turn -> session_id={body['session_id']}, "
         f"turn={body['turn']}, found={body['found']}"
     )
 
@@ -341,13 +341,13 @@ def test_chat_second_turn_increments(ingested_client):
     body = resp.json()
     assert body["session_id"] == "test-session-002"
     assert body["turn"] == 2
-    print(f"[PASS] Second turn → turn={body['turn']}")
+    print(f"[PASS] Second turn -> turn={body['turn']}")
 
 
 def test_chat_before_ingest_returns_503(client):
     """POST /chat before ingestion returns 503."""
     print("=" * 60)
-    print("TEST: POST /chat — before ingest → 503")
+    print("TEST: POST /chat -- before ingest -> 503")
     print("=" * 60)
 
     resp = client.post("/chat/no-docs", json={"message": "Hello?"})
@@ -388,7 +388,7 @@ def test_list_sessions(ingested_client):
         assert "turn_count" in s
         assert "message_count" in s
 
-    print(f"[PASS] /sessions → {body['total']} sessions listed correctly")
+    print(f"[PASS] /sessions -> {body['total']} sessions listed correctly")
 
 
 # ---------------------------------------------------------------------------
@@ -423,7 +423,7 @@ def test_get_session_history(ingested_client):
     assert "content" in assistant_msg
 
     print(
-        f"[PASS] /sessions/hist-session → "
+        f"[PASS] /sessions/hist-session -> "
         f"turn_count={body['turn_count']}, messages={len(body['messages'])}"
     )
 
@@ -431,7 +431,7 @@ def test_get_session_history(ingested_client):
 def test_get_session_not_found(ingested_client):
     """GET /sessions/{nonexistent_id} returns 404."""
     print("=" * 60)
-    print("TEST: GET /sessions/{nonexistent_id} → 404")
+    print("TEST: GET /sessions/{nonexistent_id} -> 404")
     print("=" * 60)
 
     resp = ingested_client.get("/sessions/does-not-exist")
@@ -463,18 +463,18 @@ def test_delete_session(ingested_client):
     del_resp = ingested_client.delete("/sessions/del-session")
     assert del_resp.status_code == 200
     assert "cleared" in del_resp.json()["message"].lower()
-    print("[PASS] DELETE /sessions/del-session → 200 with confirmation")
+    print("[PASS] DELETE /sessions/del-session -> 200 with confirmation")
 
     # Verify it's gone
     resp = ingested_client.get("/sessions/del-session")
     assert resp.status_code == 404
-    print("[PASS] Subsequent GET after DELETE → 404")
+    print("[PASS] Subsequent GET after DELETE -> 404")
 
 
 def test_delete_session_not_found(ingested_client):
     """DELETE /sessions/{nonexistent_id} returns 404."""
     print("=" * 60)
-    print("TEST: DELETE /sessions/{nonexistent_id} → 404")
+    print("TEST: DELETE /sessions/{nonexistent_id} -> 404")
     print("=" * 60)
 
     resp = ingested_client.delete("/sessions/ghost-session")
