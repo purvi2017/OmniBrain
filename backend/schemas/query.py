@@ -10,6 +10,25 @@ class QueryRequest(BaseModel):
     )
 
 
+class AIQueryRequest(BaseModel):
+    query: str = Field(
+        ...,
+        description="Validated user query forwarded to the AI module."
+    )
+    document_id: str = Field(
+        ...,
+        description="Primary document ID selected for AI processing."
+    )
+    source_document: str = Field(
+        ...,
+        description="Primary source document filename."
+    )
+    relevant_context: str = Field(
+        ...,
+        description="Relevant context extracted from the source document."
+    )
+
+
 class QuerySource(BaseModel):
     document_id: str = Field(
         ...,
@@ -58,16 +77,11 @@ class QueryResponse(BaseModel):
     )
     answer: str = Field(
         ...,
-        description=(
-            "Answer returned by the query processing layer. "
-            "This will be supplied by the AI module after integration."
-        )
+        description="Answer returned by the AI/query processing layer."
     )
     source_document: str = Field(
         ...,
-        description=(
-            "Primary source document used for the query result."
-        )
+        description="Primary source document used for the result."
     )
     document_id: str = Field(
         ...,
@@ -75,14 +89,11 @@ class QueryResponse(BaseModel):
     )
     relevant_context: str = Field(
         ...,
-        description=(
-            "Relevant document context identified for the query. "
-            "This field is prepared for future AI/RAG integration."
-        )
+        description="Relevant context prepared for AI/RAG processing."
     )
     sources: List[QuerySource] = Field(
         default_factory=list,
-        description="All source documents supporting the query result."
+        description="All source documents supporting the result."
     )
     documents: List[QueryDocument] = Field(
         default_factory=list,

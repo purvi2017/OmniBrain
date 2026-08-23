@@ -13,14 +13,13 @@ router = APIRouter(
 @router.post(
     "",
     response_model=QueryResponse,
-    summary="Submit a query for AI processing",
+    summary="Submit a query for AI module processing",
     description=(
-        "Accepts and validates a user query, identifies relevant "
-        "uploaded documents, prepares the primary source document "
-        "and relevant context, and returns a structured response "
-        "for future AI-module integration. The AI module can use "
-        "the query, document ID, source document, and relevant "
-        "context to generate the final answer."
+        "Validates the user query, identifies relevant uploaded "
+        "documents, prepares the primary source document and "
+        "relevant context, and returns an AI-module-ready response. "
+        "The prepared data can be forwarded to the AI module for "
+        "answer generation."
     ),
     responses={
         400: {
@@ -31,7 +30,7 @@ router = APIRouter(
         },
         500: {
             "description": (
-                "Query processing or AI-module integration failure"
+                "Backend query processing or AI module failure"
             )
         }
     }
@@ -46,7 +45,9 @@ async def query_endpoint(request: QueryRequest):
                 detail="Query cannot be empty"
             )
 
-        return process_query(query)
+        result = process_query(query)
+
+        return result
 
     except HTTPException:
         raise
@@ -54,5 +55,8 @@ async def query_endpoint(request: QueryRequest):
     except Exception:
         raise HTTPException(
             status_code=500,
-            detail="Failed to process query for AI integration"
+            detail=(
+                "AI module is unavailable or "
+                "query processing failed"
+            )
         )

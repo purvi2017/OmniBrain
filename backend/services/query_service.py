@@ -4,6 +4,8 @@ import re
 import fitz
 from fastapi import HTTPException
 
+from schemas.query import AIQueryRequest
+
 
 UPLOAD_DIR = "uploads"
 
@@ -23,14 +25,20 @@ def _build_relevant_context(
     matched_terms: list[str],
     max_length: int = 2000
 ) -> str:
-    sentences = re.split(r"(?<=[.!?])\s+", document_text.strip())
+    sentences = re.split(
+        r"(?<=[.!?])\s+",
+        document_text.strip()
+    )
 
     relevant_sentences = []
 
     for sentence in sentences:
         sentence_lower = sentence.lower()
 
-        if any(term.lower() in sentence_lower for term in matched_terms):
+        if any(
+            term.lower() in sentence_lower
+            for term in matched_terms
+        ):
             relevant_sentences.append(sentence.strip())
 
         if len(" ".join(relevant_sentences)) >= max_length:
@@ -59,7 +67,10 @@ def find_relevant_documents(query: str):
         if not filename.lower().endswith(".pdf"):
             continue
 
-        file_path = os.path.join(UPLOAD_DIR, filename)
+        file_path = os.path.join(
+            UPLOAD_DIR,
+            filename
+        )
 
         try:
             pdf = fitz.open(file_path)
@@ -71,14 +82,14 @@ def find_relevant_documents(query: str):
 
             pdf.close()
 
-            document_words = _normalize_text(document_text)
+            document_words = _normalize_text(
+                document_text
+            )
 
             matched_words = query_words.intersection(
                 document_words
             )
 
-            # Require at least two matching terms
-            # to consider a document relevant.
             if len(matched_words) >= 2:
                 matched_terms = sorted(matched_words)
 
@@ -105,6 +116,18 @@ def find_relevant_documents(query: str):
     return relevant_documents
 
 
+def build_ai_query_request(
+    query: str,
+    document: dict
+) -> AIQueryRequest:
+    return AIQueryRequest(
+        query=query,
+        document_id=document["document_id"],
+        source_document=document["filename"],
+        relevant_context=document["relevant_context"]
+    )
+
+
 def process_query(query: str):
     try:
         relevant_documents = find_relevant_documents(query)
@@ -114,9 +137,7 @@ def process_query(query: str):
                 "status": "no_relevant_document",
                 "query": query,
                 "answer": (
-                    "No relevant document was found for the query. "
-                    "The AI module can provide an answer after "
-                    "AI/RAG integration."
+                    "No relevant document was found for the query."
                 ),
                 "source_document": "",
                 "document_id": "",
@@ -126,6 +147,11 @@ def process_query(query: str):
             }
 
         primary_document = relevant_documents[0]
+
+        ai_request = build_ai_query_request(
+            query,
+            primary_document
+        )
 
         sources = [
             {
@@ -148,21 +174,24 @@ def process_query(query: str):
 
         return {
             "status": "success",
-            "query": query,
+            "query": ai_request.query,
             "answer": (
-                "Relevant document context was identified. "
-                "The AI module can generate the final answer "
-                "using this context after integration."
+                "Relevant document context prepared successfully. "
+                "The AI module can receive this request payload "
+                "for answer generation."
             ),
-            "source_document": primary_document["filename"],
-            "document_id": primary_document["document_id"],
-            "relevant_context": primary_document["relevant_context"],
+            "source_document": ai_request.source_document,
+            "document_id": ai_request.document_id,
+            "relevant_context": ai_request.relevant_context,
             "sources": sources,
             "documents": documents
         }
 
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(
             status_code=500,
-            detail="Failed to process query and prepare AI context"
+            detail="Failed to prepare query for AI module"
         )
