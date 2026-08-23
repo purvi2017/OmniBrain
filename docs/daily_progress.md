@@ -303,6 +303,13 @@
 
 ## Day 11
 
+###Purvi
+
+- Continued exam preparation
+- No active project development due to ongoing exams
+- Reviewed team progress and pending tasks
+- Coordinated with Backend and AI team members
+
 ### Narsimha
 
 - Improved backend document processing workflow
