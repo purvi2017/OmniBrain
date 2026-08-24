@@ -334,3 +334,59 @@
 - Re-ran the AI module test suite after improvements
 - Updated AI module documentation and pushed changes to the ai-module branch
 
+---------
+
+## Day 12
+
+### Purvi
+
+- Continued frontend development for the OmniBrain project.
+- Worked on connecting the frontend with the backend APIs.
+- Tested the PDF upload flow and API communication.
+- Continued development of the document query interface.
+- Coordinated with the team and reviewed overall project progress.
+  
+### Narsimha
+
+- Continued backend development and API integration.
+- Worked on testing the /upload API and document handling flow.
+- Tested backend endpoints using Swagger.
+- Continued work on the /query API integration.
+- Coordinated with the frontend team for API requirements.
+  
+### Srikanth
+
+- Continued development of the AI module for document-based querying.
+- Worked on the query processing flow and response handling.
+- Tested document query functionality.
+- Reviewed the integration requirements between AI and backend modules.
+- Coordinated with the team on AI module progress.
+
+----------
+
+## Day 13
+
+### Purvi
+
+- Completed the frontend structure for the OmniBrain project.
+- Completed and tested the PDF upload flow.
+- Integrated the frontend with the /upload backend API.
+- Completed the query page and integrated the /query API.
+- Tested document upload and query responses successfully.
+- Committed and pushed the completed frontend work to the frontend branch.
+  
+### Narsimha
+
+- Continued backend API testing and refinement.
+- Tested the /upload and /query endpoints with the frontend.
+- Verified API responses and frontend-backend communication.
+- Checked error handling and request-response flow.
+- Coordinated with the team for successful API integration.
+  
+### Srikanth
+
+- Continued testing and refinement of the AI document query functionality.
+- Worked on query processing and response generation.
+- Tested different document-related queries.
+- Reviewed AI response integration with the backend /query API.
+- Coordinated with the frontend and backend team members for integration.
