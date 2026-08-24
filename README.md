@@ -28,6 +28,21 @@ Answer + Sources (Structured Attributions & Page-Level Citations)
 
 ---
 
+## Day 12: Backend Query Integration Layer
+
+- **Backend Integration Interface (`process_backend_query`)**: Dedicated integration entry point in `rag_llm.py` and `schemas.py` (`BackendQueryInput` / `BackendQueryOutput`) to receive incoming backend queries along with optional direct document context or vector store instance.
+- **Input Preparation for AI Processing**: Formats received query + document context into structured context blocks for strict grounded prompt assembly.
+- **Grounded Answer Generation Flow**: Enforces factual grounding when relevant context is present, generating accurate answers with clear source document attributions.
+- **Fallback Response Handling**: Gracefully handles missing, empty, whitespace-only, or out-of-domain contexts with a deterministic refusal message (`NO_CONTEXT_MESSAGE`) and `found=False`.
+- **Mandatory Response Fields**:
+  - `answer`: Generated grounded answer or fallback refusal message.
+  - `source_document`: Source document filename or identifier (e.g. `market_analysis_2026.pdf`).
+  - `document_id`: Unique document ID stem (e.g. `market_analysis_2026`).
+  - `relevant_context`: Exact formatted context used for AI processing.
+- **Comprehensive Integration Test Suite (`tests/test_backend_integration.py`)**: End-to-end tests covering direct context input, vector store retrieval, fallback responses, Pydantic schema validation, and multi-query flow verification.
+
+---
+
 ## Day 11: AI Module Interface and RAG Response Standardization
 
 - **Standardized Data Schemas (`schemas.py`)**: Defines clean Pydantic and Python data structures for backend integration:

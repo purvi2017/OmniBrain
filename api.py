@@ -39,6 +39,7 @@ from rag_llm import (
     DEFAULT_MAX_SCORE_DROP,
     DEFAULT_TOP_K,
     answer_query,
+    process_backend_query,
     retrieve_context,
     prepare_context,
     build_store,
@@ -138,6 +139,8 @@ class IngestResponse(BaseModel):
 
 class QueryRequest(BaseModel):
     query: str = Field(..., description="The question to answer from the indexed documents")
+    context: Optional[str] = Field(None, description="Optional document context string passed directly by backend")
+    source_document: Optional[str] = Field(None, description="Optional source document filename")
     top_k: int = Field(DEFAULT_TOP_K, ge=1, le=20, description="Max chunks to retrieve")
     min_score: float = Field(DEFAULT_MIN_SCORE, ge=0.0, le=1.0, description="Minimum similarity score")
     max_score_drop: float = Field(DEFAULT_MAX_SCORE_DROP, ge=0.0, le=1.0)
@@ -158,6 +161,9 @@ class SourceItem(BaseModel):
 class QueryResponse(BaseModel):
     query: str
     answer: str
+    source_document: str = "N/A"
+    document_id: str = "N/A"
+    relevant_context: str = ""
     found: bool
     sources: List[SourceItem]
     retrieved_chunks: int
@@ -175,6 +181,9 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     query: str
     answer: str
+    source_document: str = "N/A"
+    document_id: str = "N/A"
+    relevant_context: str = ""
     found: bool
     sources: List[SourceItem]
     retrieved_chunks: int
@@ -356,28 +365,34 @@ async def ingest(files: List[UploadFile] = File(...)):
 )
 async def query(req: QueryRequest):
     """
-    Execute a single-turn grounded RAG query across indexed documents.
+    Execute a single-turn grounded RAG query across indexed documents or direct context.
     No conversation history is used. For stateful multi-turn chat, use /chat/{session_id}.
     """
-    _require_store()
+    if req.context is None:
+        _require_store()
     _require_client()
 
     state = get_state()
 
-    result = answer_query(
+    result = process_backend_query(
         client=state.client,
-        store=state.store,
         query=req.query,
+        context=req.context,
+        store=state.store,
+        document_id=req.document_id,
+        source_document=req.source_document,
         top_k=req.top_k,
         min_score=req.min_score,
         max_score_drop=req.max_score_drop,
-        document_id=req.document_id,
         model_name=state.model_name,
     )
 
     return QueryResponse(
         query=result["query"],
         answer=result["answer"],
+        source_document=result.get("source_document", "N/A"),
+        document_id=result.get("document_id", "N/A"),
+        relevant_context=result.get("relevant_context", ""),
         found=result["found"],
         sources=_build_source_items(result.get("sources", [])),
         retrieved_chunks=result["retrieved_chunks"],
@@ -413,6 +428,9 @@ async def chat(session_id: str, req: ChatRequest):
     return ChatResponse(
         query=result["query"],
         answer=result["answer"],
+        source_document=result.get("source_document", "N/A"),
+        document_id=result.get("document_id", "N/A"),
+        relevant_context=result.get("relevant_context", ""),
         found=result["found"],
         sources=_build_source_items(result.get("sources", [])),
         retrieved_chunks=result["retrieved_chunks"],

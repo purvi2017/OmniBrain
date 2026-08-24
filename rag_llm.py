@@ -443,6 +443,132 @@ def generate_answer(
 # Complete RAG + LLM Pipeline
 # ------------------------------------------------------------
 
+# ------------------------------------------------------------
+# Complete RAG + LLM Pipeline & Backend Query Integration Layer
+# ------------------------------------------------------------
+
+def process_backend_query(
+    client: Any,
+    query: str,
+    context: Optional[str] = None,
+    store: Optional[FaissStore] = None,
+    document_id: Optional[str] = None,
+    source_document: Optional[str] = None,
+    top_k: int = DEFAULT_TOP_K,
+    min_score: float = DEFAULT_MIN_SCORE,
+    max_score_drop: float = DEFAULT_MAX_SCORE_DROP,
+    model_name: str = DEFAULT_GEMINI_MODEL,
+) -> Dict[str, Any]:
+    """
+    Backend Query Integration Layer interface.
+
+    Accepts backend query and optional document context (or vector store).
+    Prepares input, executes grounded answer generation flow or fallback response,
+    and returns a structured dict containing:
+      - answer
+      - source_document
+      - document_id
+      - relevant_context
+      - found
+      - sources
+      - retrieved_chunks
+      - model
+    """
+    query = (query or "").strip()
+    if not query:
+        return {
+            "query": "",
+            "answer": "Query cannot be empty.",
+            "source_document": "N/A",
+            "document_id": "N/A",
+            "relevant_context": "",
+            "found": False,
+            "sources": [],
+            "retrieved_chunks": 0,
+            "model": model_name,
+        }
+
+    # Case 1: Direct context provided by backend
+    if context is not None:
+        context_str = context.strip()
+        if not context_str:
+            return {
+                "query": query,
+                "answer": NO_CONTEXT_MESSAGE,
+                "source_document": "N/A",
+                "document_id": "N/A",
+                "relevant_context": "",
+                "found": False,
+                "sources": [],
+                "retrieved_chunks": 0,
+                "model": model_name,
+            }
+
+        doc_id = document_id or "direct_context"
+        src_doc = source_document or "direct_context"
+
+        answer = generate_answer(
+            client=client,
+            query=query,
+            context=context_str,
+            model_name=model_name,
+        )
+
+        found = (answer != NO_CONTEXT_MESSAGE)
+        sources = []
+        if found:
+            sources.append(
+                {
+                    "source": src_doc,
+                    "filename": src_doc,
+                    "document_id": doc_id,
+                    "chunk_id": 0,
+                    "page": 1,
+                    "score": 1.0,
+                    "confidence": "HIGH",
+                    "text_preview": context_str[:150].replace("\n", " "),
+                }
+            )
+
+        return {
+            "query": query,
+            "answer": answer,
+            "source_document": src_doc if found else "N/A",
+            "document_id": doc_id if found else "N/A",
+            "relevant_context": context_str if found else "",
+            "found": found,
+            "sources": sources,
+            "retrieved_chunks": 1 if found else 0,
+            "model": model_name,
+        }
+
+    # Case 2: Store provided, retrieve context via FAISS search
+    if store is not None:
+        return answer_query(
+            client=client,
+            store=store,
+            query=query,
+            top_k=top_k,
+            min_score=min_score,
+            max_score_drop=max_score_drop,
+            document_id=document_id,
+            model_name=model_name,
+        )
+
+    # Case 3: Neither direct context nor store provided
+    return {
+        "query": query,
+        "answer": NO_CONTEXT_MESSAGE,
+        "source_document": "N/A",
+        "document_id": "N/A",
+        "relevant_context": "",
+        "found": False,
+        "sources": [],
+        "retrieved_chunks": 0,
+        "model": model_name,
+    }
+
+
 def answer_query(
     client: Any,
     store: FaissStore,
@@ -458,13 +584,16 @@ def answer_query(
     Query -> Embed -> Multi-Doc FAISS Search -> Adaptive Filter -> LLM -> Structured Response.
 
     Returns:
-        Dict containing answer, source citations with page numbers, scores, and metadata.
+        Dict containing answer, source_document, document_id, relevant_context, and source attributions.
     """
     query = (query or "").strip()
     if not query:
         return {
             "query": "",
             "answer": "Query cannot be empty.",
+            "source_document": "N/A",
+            "document_id": "N/A",
+            "relevant_context": "",
             "found": False,
             "sources": [],
             "retrieved_chunks": 0,
@@ -486,6 +615,9 @@ def answer_query(
         return {
             "query": query,
             "answer": NO_CONTEXT_MESSAGE,
+            "source_document": "N/A",
+            "document_id": "N/A",
+            "relevant_context": "",
             "found": False,
             "sources": [],
             "retrieved_chunks": 0,
@@ -528,9 +660,16 @@ def answer_query(
             }
         )
 
+    # Determine primary source document and document ID
+    primary_source_doc = sources[0]["filename"] if sources else "unknown"
+    primary_doc_id = sources[0]["document_id"] if sources else "unknown"
+
     return {
         "query": query,
         "answer": answer,
+        "source_document": primary_source_doc,
+        "document_id": primary_doc_id,
+        "relevant_context": context,
         "found": True,
         "sources": sources,
         "retrieved_chunks": len(results),

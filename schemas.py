@@ -58,9 +58,40 @@ class RAGQueryOutput(BaseModel):
     """Output payload returned by a single-turn RAG query execution."""
     query: str = Field(..., description="The processed query string")
     answer: str = Field(..., description="Generated LLM response or refusal message")
+    source_document: str = Field("N/A", description="Primary source document filename or identifier")
+    document_id: str = Field("N/A", description="Primary document ID stem")
+    relevant_context: str = Field("", description="Formatted document context used for AI answer generation")
     found: bool = Field(..., description="True if relevant document context was retrieved")
     sources: List[SourceAttribution] = Field(default_factory=list, description="Retrieved source attributions")
     retrieved_chunks: int = Field(0, description="Number of matching context chunks retrieved")
+    model: str = Field(..., description="LLM model identifier used for generation")
+
+
+# ------------------------------------------------------------
+# Backend Integration Query Input & Output Schemas
+# ------------------------------------------------------------
+
+class BackendQueryInput(BaseModel):
+    """Input payload for Backend Query Integration Layer."""
+    query: str = Field(..., min_length=1, description="Backend question string to answer")
+    context: Optional[str] = Field(None, description="Optional document context string passed directly by backend")
+    document_id: Optional[str] = Field(None, description="Optional document ID constraint or identifier")
+    source_document: Optional[str] = Field(None, description="Optional source document filename")
+    top_k: int = Field(3, ge=1, le=20, description="Maximum context chunks to retrieve if store is used")
+    min_score: float = Field(0.35, ge=0.0, le=1.0, description="Minimum similarity score threshold")
+    max_score_drop: float = Field(0.25, ge=0.0, le=1.0, description="Max relative drop allowed from top-1 score")
+
+
+class BackendQueryOutput(BaseModel):
+    """Output payload returned by Backend Query Integration Layer."""
+    query: str = Field(..., description="The processed query string")
+    answer: str = Field(..., description="Generated grounded answer or fallback response")
+    source_document: str = Field(..., description="Source document filename or identifier")
+    document_id: str = Field(..., description="Document ID")
+    relevant_context: str = Field(..., description="Formatted relevant context passed for AI processing")
+    found: bool = Field(..., description="True if relevant document context was retrieved/available")
+    sources: List[SourceAttribution] = Field(default_factory=list, description="Retrieved source attributions")
+    retrieved_chunks: int = Field(0, description="Number of context chunks used")
     model: str = Field(..., description="LLM model identifier used for generation")
 
 
@@ -83,7 +114,11 @@ class ChatTurnOutput(BaseModel):
     turn: int = Field(..., description="Turn counter (1-indexed)")
     query: str = Field(..., description="User message for this turn")
     answer: str = Field(..., description="Generated assistant response")
+    source_document: str = Field("N/A", description="Primary source document filename or identifier")
+    document_id: str = Field("N/A", description="Primary document ID stem")
+    relevant_context: str = Field("", description="Formatted document context used for AI answer generation")
     found: bool = Field(..., description="True if relevant document context was retrieved")
     sources: List[SourceAttribution] = Field(default_factory=list, description="Retrieved source attributions")
     retrieved_chunks: int = Field(0, description="Number of matching context chunks retrieved")
     model: str = Field(..., description="LLM model identifier used for generation")
+
