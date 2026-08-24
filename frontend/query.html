@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OmniBrain - Query</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="query-container">
+
+        <h1>Ask OmniBrain</h1>
+
+        <p>Ask a question about your uploaded documents.</p>
+
+        <div class="query-box">
+
+            <input
+                type="text"
+                id="queryInput"
+                placeholder="Enter your question..."
+            >
+
+            <button onclick="askQuery()">
+                Ask
+            </button>
+
+        </div>
+
+        <div id="queryStatus"></div>
+
+        <div id="answerBox">
+
+            <h2>Answer</h2>
+
+            <p id="answer"></p>
+
+            <p>
+                <strong>Source Document:</strong>
+                <span id="sourceDocument"></span>
+            </p>
+
+            <p>
+                <strong>Document ID:</strong>
+                <span id="documentId"></span>
+            </p>
+
+            <p>
+                <strong>Relevant Context:</strong>
+                <span id="relevantContext"></span>
+            </p>
+
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
