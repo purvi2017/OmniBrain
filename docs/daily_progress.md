@@ -143,6 +143,8 @@
 - Tested RAG retrieval with multiple queries
 - Verified relevant context retrieval from the vector database
 
+--------
+
 ## Day 6
 
 ### Purvi
@@ -172,6 +174,7 @@
 - Tested document retrieval with different queries
 - Prepared AI module for backend integration
 
+-------------
 
 ## Day 7
 
@@ -201,6 +204,7 @@
 - Tested the RAG + LLM pipeline with different queries
 - Prepared the AI module for backend integration
 
+-------------
 
 ## Day 8
 
@@ -300,6 +304,8 @@
 - Ran the complete AI module test suite
 - Verified that existing tests continue to pass
 - Committed and pushed changes to the ai-module branch
+
+--------
 
 ## Day 11
 
