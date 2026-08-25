@@ -390,3 +390,35 @@
 - Tested different document-related queries.
 - Reviewed AI response integration with the backend /query API.
 - Coordinated with the frontend and backend team members for integration.
+
+----------
+
+## Day 14 — Daily Progress
+
+### Purvi – Frontend
+
+- Completed the query page structure for OmniBrain.
+- Implemented the query input and Ask Query interaction.
+- Integrated the frontend with the backend /query API.
+- Tested empty query validation and successful query requests.
+- Verified that answer, source document, document ID, and relevant context are displayed correctly.
+- Tested the query flow with multiple questions.
+- Continued preparing the frontend for upcoming Backend + AI Module integration.
+  
+### Narsimha – Backend
+
+- Continued development and testing of the Backend /query API.
+- Worked on Backend ↔ AI Module communication requirements.
+- Verified query request and response handling.
+- Tested document-related information and structured API responses.
+- Reviewed error handling and integration requirements for the real document flow.
+- Continued preparing the backend for AI Module integration.
+  
+### Srikanth – AI Module
+
+- Continued work on the AI Module integration with the Backend.
+- Worked on handling queries and relevant document context received from the Backend.
+- Tested the document-based query and response generation flow.
+- Reviewed structured response fields required for Backend integration.
+- Tested relevant-context and fallback scenarios.
+- Continued preparing the AI Module for real document-based responses.
