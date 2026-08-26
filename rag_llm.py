@@ -587,12 +587,15 @@ def answer_query(
         Dict containing answer, source_document, document_id, relevant_context, and source attributions.
     """
     query = (query or "").strip()
+    doc_id_fallback = document_id or "N/A"
+    src_doc_fallback = f"{document_id}.pdf" if document_id else "N/A"
+
     if not query:
         return {
             "query": "",
             "answer": "Query cannot be empty.",
-            "source_document": "N/A",
-            "document_id": "N/A",
+            "source_document": src_doc_fallback,
+            "document_id": doc_id_fallback,
             "relevant_context": "",
             "found": False,
             "sources": [],
@@ -615,8 +618,8 @@ def answer_query(
         return {
             "query": query,
             "answer": NO_CONTEXT_MESSAGE,
-            "source_document": "N/A",
-            "document_id": "N/A",
+            "source_document": src_doc_fallback,
+            "document_id": doc_id_fallback,
             "relevant_context": "",
             "found": False,
             "sources": [],
