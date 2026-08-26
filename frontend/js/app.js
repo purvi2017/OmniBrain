@@ -3,40 +3,40 @@ async function uploadPDF() {
     const fileInput = document.getElementById("pdfFile");
     const status = document.getElementById("status");
 
-    if (fileInput.files.length === 0) {
+    if (!fileInput.files.length) {
         status.innerText = "Please select a PDF file";
         return;
     }
+
+    status.innerText = "Uploading...";
 
     const formData = new FormData();
     formData.append("file", fileInput.files[0]);
 
     try {
 
-        const response = await fetch(
-            "http://127.0.0.1:8000/upload",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
+        const response = await fetch("http://127.0.0.1:8000/upload", {
+            method: "POST",
+            body: formData
+        });
 
-        console.log("Status:", response.status);
+        console.log("Upload Status:", response.status);
 
-const text = await response.text();
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Upload Error:", errorText);
+            status.innerText = "Upload Failed ❌";
+            return;
+        }
 
-console.log("Response:", text);
+        status.innerText = "Upload Successful ✅";
 
-if (!response.ok) {
-    throw new Error(text);
-}
-
-status.innerText = "Upload Successful ✅";
-
+        const result = await response.text();
+        console.log("Upload Response:", result);
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Upload Error:", error);
         status.innerText = "Upload Failed ❌";
     }
 }
