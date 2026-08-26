@@ -491,21 +491,21 @@ def process_backend_query(
     # Case 1: Direct context provided by backend
     if context is not None:
         context_str = context.strip()
+        doc_id = document_id or ("direct_context" if context_str else "N/A")
+        src_doc = source_document or ("direct_context" if context_str else "N/A")
+
         if not context_str:
             return {
                 "query": query,
                 "answer": NO_CONTEXT_MESSAGE,
-                "source_document": "N/A",
-                "document_id": "N/A",
+                "source_document": src_doc,
+                "document_id": doc_id,
                 "relevant_context": "",
                 "found": False,
                 "sources": [],
                 "retrieved_chunks": 0,
                 "model": model_name,
             }
-
-        doc_id = document_id or "direct_context"
-        src_doc = source_document or "direct_context"
 
         answer = generate_answer(
             client=client,
@@ -533,9 +533,9 @@ def process_backend_query(
         return {
             "query": query,
             "answer": answer,
-            "source_document": src_doc if found else "N/A",
-            "document_id": doc_id if found else "N/A",
-            "relevant_context": context_str if found else "",
+            "source_document": src_doc,
+            "document_id": doc_id,
+            "relevant_context": context_str,
             "found": found,
             "sources": sources,
             "retrieved_chunks": 1 if found else 0,
