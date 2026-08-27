@@ -197,7 +197,7 @@ def _map_ai_sources(ai_sources):
     return sources
 
 
-def process_query(query: str):
+async def process_query(query: str):
     """
     Complete backend query flow:
 
@@ -243,7 +243,7 @@ def process_query(query: str):
         )
 
         # Call the REAL AI module.
-        ai_response = query_ai_module(
+        ai_response = await query_ai_module(
             query=ai_request.query,
             document_id=(
                 ai_request.document_id

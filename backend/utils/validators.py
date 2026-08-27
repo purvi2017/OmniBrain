@@ -16,6 +16,12 @@ def validate_pdf(file: UploadFile, file_size: int):
             detail="Only PDF files are allowed"
         )
 
+    if file_size == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file is empty"
+        )
+
     if file_size > MAX_FILE_SIZE:
         raise HTTPException(
             status_code=413,

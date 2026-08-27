@@ -1,11 +1,10 @@
 import os
 import uuid
 
-
 UPLOAD_DIR = "uploads"
 
 
-def save_file(file_content: bytes) -> tuple[str, str, int, str]:
+def save_file(file_content: bytes) -> tuple[str, str, str, int]:
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
     document_id = str(uuid.uuid4())

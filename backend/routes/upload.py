@@ -4,6 +4,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 
 from utils.validators import validate_pdf
 from services.file_service import save_file
+from schemas.upload import UploadResponse
 
 
 router = APIRouter()
@@ -11,11 +12,17 @@ router = APIRouter()
 
 @router.post(
     "/upload",
+    response_model=UploadResponse,
     summary="Upload a PDF document",
     description=(
         "Uploads a PDF document, validates its file type and size, "
         "generates a unique document ID, and stores the document."
-    )
+    ),
+    responses={
+        400: {"description": "No file selected, invalid file type, or empty file"},
+        413: {"description": "File exceeds the maximum allowed size"},
+        500: {"description": "File upload failed due to a server error"}
+    }
 )
 async def upload_pdf(file: UploadFile = File(...)):
     try:
@@ -43,8 +50,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     except HTTPException:
         raise
 
-    except Exception:
+    except Exception as exc:
         raise HTTPException(
             status_code=500,
             detail="File upload failed"
-        )
+        ) from exc
