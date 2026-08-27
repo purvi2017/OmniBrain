@@ -399,7 +399,7 @@
 
 ----------
 
-## Day 14 — Daily Progress
+## Day 14 
 
 ### Purvi – Frontend
 
@@ -428,3 +428,26 @@
 - Reviewed structured response fields required for Backend integration.
 - Tested relevant-context and fallback scenarios.
 - Continued preparing the AI Module for real document-based responses.
+
+## Day 15 
+
+### Purvi – Frontend
+
+- Integrated the Query API with the frontend.
+- Implemented query response handling and display.
+- Displayed Answer, Source Document, Document ID, and Relevant Context.
+- Added success and error status handling.
+- Tested the frontend query flow with the backend.
+
+### Narsimha – Backend
+
+- Implemented the Query API endpoint.
+- Configured CORS for frontend-backend communication.
+- Added structured JSON response handling for queries.
+- Tested the Query API with frontend requests.
+
+### Srikanth – AI Module
+
+- Worked on the AI response integration flow.
+- Prepared the response structure required for frontend and backend integration.
+- Tested the AI response flow with sample queries.
