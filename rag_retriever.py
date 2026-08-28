@@ -15,8 +15,7 @@ User Query
 from typing import List, Dict, Any, Optional
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
-
+from embeddings.embedder import embed_chunks
 from vector_db.faiss_store import FaissStore
 
 
@@ -59,9 +58,7 @@ class RAGRetriever:
         min_score: float = DEFAULT_MIN_SCORE,
         max_score_drop: float = DEFAULT_MAX_SCORE_DROP,
     ):
-        print(f"[INFO] Loading embedding model: {model_name}")
-        self.model = SentenceTransformer(model_name)
-
+        self.model_name = model_name
         print(f"[INFO] Loading FAISS index: {index_prefix}")
         self.store = FaissStore.load(index_prefix)
         self.min_score = min_score
@@ -82,12 +79,7 @@ class RAGRetriever:
         if not query or not query.strip():
             raise ValueError("Query cannot be empty.")
 
-        vector = self.model.encode(
-            [query],
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-        )
-        vector = np.asarray(vector, dtype="float32")
+        vector = embed_chunks([query], model_name=self.model_name)
         return vector
 
     # -----------------------------------------------------

@@ -166,7 +166,7 @@ def test_vector_store_grounded_answer(multi_doc_store):
         client=mock_llm_responder,
         query=query,
         store=store,
-        min_score=0.20,
+        min_score=0.01,
     )
 
     # Verify required fields

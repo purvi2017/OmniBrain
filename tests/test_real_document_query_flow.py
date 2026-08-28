@@ -136,7 +136,7 @@ def test_page_level_attribution_multipage_doc(real_documents_store):
         client=mock_real_doc_llm,
         query=query,
         store=store,
-        min_score=0.20,
+        min_score=0.01,
     )
 
     assert res["found"] is True

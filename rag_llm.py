@@ -666,6 +666,7 @@ def answer_query(
     # Determine primary source document and document ID
     primary_source_doc = sources[0]["filename"] if sources else "unknown"
     primary_doc_id = sources[0]["document_id"] if sources else "unknown"
+    found = (answer != NO_CONTEXT_MESSAGE)
 
     return {
         "query": query,
@@ -673,9 +674,9 @@ def answer_query(
         "source_document": primary_source_doc,
         "document_id": primary_doc_id,
         "relevant_context": context,
-        "found": True,
-        "sources": sources,
-        "retrieved_chunks": len(results),
+        "found": found,
+        "sources": sources if found else [],
+        "retrieved_chunks": len(results) if found else 0,
         "model": model_name,
     }
 

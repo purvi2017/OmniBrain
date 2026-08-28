@@ -14,10 +14,9 @@ Usage:
     vectors = embed_chunks(["chunk one text", "chunk two text"])
 """
 
-from typing import List
+from typing import List, Any
 import hashlib
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 DEFAULT_MODEL_NAME = "all-MiniLM-L6-v2"
 FALLBACK_DIM = 384  # matches all-MiniLM-L6-v2 so downstream code (FAISS dim) doesn't care which path ran
@@ -26,13 +25,14 @@ _model_cache = {}
 _offline_fallback_active = False
 
 
-def get_model(model_name: str = DEFAULT_MODEL_NAME) -> SentenceTransformer:
+def get_model(model_name: str = DEFAULT_MODEL_NAME) -> Any:
     """
     Load (and cache) a SentenceTransformer model so we don't reload
     it from disk on every call.
     """
     if model_name not in _model_cache:
         print(f"[INFO] Loading embedding model: {model_name} (first load may take a moment)...")
+        from sentence_transformers import SentenceTransformer
         _model_cache[model_name] = SentenceTransformer(model_name)
     return _model_cache[model_name]
 
@@ -75,6 +75,9 @@ def embed_chunks(chunks: List[str], model_name: str = DEFAULT_MODEL_NAME) -> np.
 
     if not chunks:
         return np.array([])
+
+    if _offline_fallback_active:
+        return _hashing_fallback_embed(chunks)
 
     try:
         model = get_model(model_name)
