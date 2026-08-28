@@ -451,3 +451,47 @@
 - Worked on the AI response integration flow.
 - Prepared the response structure required for frontend and backend integration.
 - Tested the AI response flow with sample queries.
+  -------------
+
+## Day 16
+
+### Purvi – Frontend
+- Integrated the Query API with the frontend.
+- Implemented query response handling and display.
+- Displayed Answer, Source Document, Document ID, and Relevant Context.
+- Added success and error status handling.
+- Tested the frontend query flow with the backend.
+
+### Narsimha – Backend
+- Implemented the Query API endpoint.
+- Configured CORS for frontend-backend communication.
+- Added structured JSON response handling for queries.
+- Tested the Query API with frontend requests.
+
+### Srikanth – AI Module
+- Worked on the AI response integration flow.
+- Prepared the response structure required for frontend and backend integration.
+- Tested the AI response flow with sample queries.
+-------------
+
+## Day 17 
+
+
+### Purvi – Frontend
+- Improved the Query page UI and overall frontend design.
+- Integrated and displayed the OmniBrain logo.
+- Added floating logo animation and improved visual styling.
+- Refined the Query interface for a better user experience.
+- Tested the frontend after UI changes.
+
+### Narsimha – Backend
+- Tested the Query API with different requests.
+- Verified frontend-backend communication.
+- Fixed API integration and response-handling issues.
+- Improved backend stability and error handling.
+
+### Srikanth – AI Module
+- Tested AI responses with different sample queries.
+- Verified AI response integration with the backend.
+- Checked response accuracy and handling of query results.
+- Worked on improving the AI response flow.
