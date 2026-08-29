@@ -9,25 +9,110 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
-<body>
+<body class="upload-page">
 
-    <div class="upload-container">
+    <!-- Ambient background -->
+    <div class="upload-glow upload-glow-one"></div>
+    <div class="upload-glow upload-glow-two"></div>
 
-        <h1>Upload PDF</h1>
+    <!-- Floating elements -->
+    <div class="upload-float pdf-float">PDF</div>
+    <div class="upload-float ai-float">AI</div>
+    <div class="upload-float search-float">⌕</div>
+    <div class="upload-float data-float">▤</div>
+    <div class="upload-float spark-float">✦</div>
+    <div class="upload-float db-float">◈</div>
 
-        <input type="file" id="pdfFile" accept=".pdf">
 
-        <br><br>
+    <main class="upload-main">
 
-        <button type="button" onclick="uploadPDF()">
-            Upload
-        </button>
+        <!-- Logo -->
+        <div class="upload-logo">
 
-        <p id="status">Ready to upload</p>
+            <img
+                src="../image/logo.png"
+                alt="OmniBrain Logo"
+            >
 
-    </div>
+        </div>
 
-  
+
+        <!-- Heading -->
+        <section class="upload-header">
+
+            <h1>
+                Upload your
+                <span>document</span>
+            </h1>
+
+            <p>
+                Upload your PDF and let OmniBrain extract
+                the information you need.
+            </p>
+
+        </section>
+
+
+        <!-- Upload Card -->
+        <section class="upload-card">
+
+            <!-- PDF icon -->
+            <div class="pdf-icon">
+                <span>PDF</span>
+            </div>
+
+
+            <h2>Select PDF Document</h2>
+
+            <p class="upload-description">
+                Choose a PDF file from your device
+            </p>
+
+
+            <!-- File Input -->
+            <div class="file-box">
+
+                <div class="upload-arrow">
+                    ↑
+                </div>
+
+                <input
+                    type="file"
+                    id="pdfFile"
+                    accept=".pdf"
+                >
+
+            </div>
+
+
+            <!-- IMPORTANT: functionality same -->
+            <button
+                type="button"
+                onclick="uploadPDF()"
+                class="upload-button"
+            >
+                <span>↥</span>
+                Upload PDF
+            </button>
+
+
+            <!-- Status -->
+            <p id="status" class="upload-status">
+                Ready to upload
+            </p>
+
+        </section>
+
+
+        <footer class="upload-footer">
+            <span>🔒</span>
+            Your documents stay private.
+        </footer>
+
+    </main>
+
+
+    <!-- Existing JavaScript — DON'T CHANGE -->
     <script src="../js/app.js"></script>
 
 </body>

@@ -9,55 +9,199 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="query-page">
 
-    <div class="query-container">
+    <!-- Background Glow -->
+    <div class="bg-glow glow-one"></div>
+    <div class="bg-glow glow-two"></div>
 
-        <h1>Ask OmniBrain</h1>
+    <!-- Main Container -->
+    <main class="query-container">
 
-        <p>Ask a question about your uploaded documents.</p>
+        <!-- Header -->
+        <section class="query-header">
+<!-- Floating Elements -->
+    <span class="float-element float-pdf">PDF</span>
+    <span class="float-element float-ai">AI</span>
+    <span class="float-element float-search">⌕</span>
+    <span class="float-element float-doc">▤</span>
+    <span class="float-element float-insight">✦</span>
+    <span class="float-element float-data">◈</span>
+            <div class="brand-badge">
+    <img src="image/logo.png" alt="OmniBrain AI Logo">
+    
+</div>
 
-        <div class="query-box">
-
-            <input
-                type="text"
-                id="queryInput"
-                placeholder="Enter your question..."
-            >
-
-            <button onclick="askQuery()">
-                Ask
-            </button>
-
-        </div>
-
-        <div id="queryStatus"></div>
-
-        <div id="answerBox">
-
-            <h2>Answer</h2>
-
-            <p id="answer"></p>
+            <h1>
+                Ask anything about
+                <span>your documents.</span>
+            </h1>
 
             <p>
-                <strong>Source Document:</strong>
-                <span id="sourceDocument"></span>
+                Upload your documents and let OmniBrain find
+                the information you need instantly.
             </p>
 
-            <p>
-                <strong>Document ID:</strong>
-                <span id="documentId"></span>
-            </p>
+        </section>
 
-            <p>
-                <strong>Relevant Context:</strong>
-                <span id="relevantContext"></span>
-            </p>
 
-        </div>
+        <!-- Query Box -->
+        <section class="query-card">
 
-    </div>
+            <div class="query-label">
+                <span>✦</span>
+                Ask OmniBrain
+            </div>
+            <div class="query-suggestions">
 
+    <span class="suggestion-label">Try asking</span>
+
+    <button type="button"
+        onclick="setQuery('Summarize this document')">
+        Summarize this document
+    </button>
+
+    <button type="button"
+        onclick="setQuery('What are the key points?')">
+        Key points
+    </button>
+
+    <button type="button"
+        onclick="setQuery('What is this document about?')">
+        What is this about?
+    </button>
+
+    <button type="button"
+        onclick="setQuery('Find important information')">
+        Find important information
+    </button>
+
+</div>
+
+            <div class="query-box">
+
+                <input
+                    type="text"
+                    id="queryInput"
+                    placeholder="Ask a question about your document..."
+                    autocomplete="off"
+                >
+
+                <button onclick="askQuery()">
+                    <span>Ask</span>
+                    <span class="arrow">→</span>
+                </button>
+
+            </div>
+
+            <div id="queryStatus" class="query-status"></div>
+
+        </section>
+
+
+        <!-- Answer -->
+        <section id="answerBox" class="answer-card">
+
+            <div class="answer-heading">
+
+                <div class="answer-icon">
+                    ✨
+                </div>
+
+                <div>
+                    <span class="small-title">OMNIBRAIN RESPONSE</span>
+                    <h2>Answer</h2>
+                </div>
+
+            </div>
+
+
+            <!-- Main Answer -->
+            <div class="answer-content">
+
+                <p id="answer">
+                    Your answer will appear here...
+                </p>
+
+            </div>
+
+
+            <!-- Information Grid -->
+            <div class="info-grid">
+
+                <div class="info-card">
+
+                    <span class="info-icon">📄</span>
+
+                    <div>
+                        <span class="info-label">
+                            SOURCE DOCUMENT
+                        </span>
+
+                        <p id="sourceDocument">
+                            —
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <span class="info-icon">🆔</span>
+
+                    <div>
+                        <span class="info-label">
+                            DOCUMENT ID
+                        </span>
+
+                        <p id="documentId">
+                            —
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Context -->
+            <div class="context-card">
+
+                <div class="context-header">
+
+                    <span class="context-icon">📚</span>
+
+                    <div>
+                        <span class="info-label">
+                            DOCUMENT CONTEXT
+                        </span>
+
+                        <h3>Relevant Context</h3>
+                    </div>
+
+                </div>
+
+                <p id="relevantContext">
+                    Relevant information from your uploaded document
+                    will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+        <footer>
+            <span>🔒</span>
+            OmniBrain keeps your document queries private.
+        </footer>
+
+    </main>
+
+
+    <!-- IMPORTANT: Existing JavaScript remains unchanged -->
     <script src="js/app.js"></script>
 
 </body>
