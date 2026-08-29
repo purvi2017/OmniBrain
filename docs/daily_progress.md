@@ -495,3 +495,34 @@
 - Verified AI response integration with the backend.
 - Checked response accuracy and handling of query results.
 - Worked on improving the AI response flow.
+
+--------------
+
+## Day 18 – Daily Progress
+
+### Purvi – Frontend
+
+- Finalized the premium green and dark UI theme for the OmniBrain frontend.
+- Integrated the OmniBrain logo and floating visual elements across the frontend pages.
+- Improved the Upload PDF and Query pages for a consistent user experience.
+- Added and refined query interaction states including loading, success, and error handling.
+- Tested the frontend flow with the dummy backend APIs.
+- Prepared the frontend for future integration with the actual backend and AI module.
+
+
+### Narsimha – Backend
+
+- Continued development of the backend API layer for OmniBrain.
+- Worked on the document upload and query API flow.
+- Improved backend request and response handling for frontend integration.
+- Tested API endpoints with sample document and query requests.
+- Prepared the backend structure for integration with the AI module.
+
+
+### Srikanth – AI Module
+
+- Continued development of the AI response processing flow.
+- Worked on preparing document context for query-based responses.
+- Refined the AI response structure required for backend integration.
+- Tested the AI module with sample document queries.
+- Prepared the AI module for integration with the backend query pipeline.
