@@ -302,34 +302,15 @@ async def process_query(query: str):
         ]
 
         return {
-            "status": (
-                "success"
-                if ai_response.get(
-                    "found",
-                    True
-                )
-                else "no_relevant_document"
-            ),
-            "query": ai_response.get(
-                "query",
-                query
-            ),
+            "status": "success",
+            "query": query,
             "answer": ai_response.get(
                 "answer",
                 "AI module returned no answer."
             ),
-            "source_document": ai_response.get(
-                "source_document",
-                ai_request.source_document
-            ),
-            "document_id": ai_response.get(
-                "document_id",
-                ai_request.document_id
-            ),
-            "relevant_context": ai_response.get(
-                "relevant_context",
-                ai_request.relevant_context
-            ),
+            "source_document": ai_request.source_document,
+            "document_id": ai_request.document_id,
+            "relevant_context": ai_request.relevant_context,
             "sources": ai_sources,
             "documents": documents
         }
