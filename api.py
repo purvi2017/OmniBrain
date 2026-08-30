@@ -26,10 +26,13 @@ import os
 import shutil
 import tempfile
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, status
-from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from rag_chat import ConversationalRAGPipeline, ChatMessage
@@ -111,12 +114,40 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RAG Pipeline API",
     description=(
-        "Day 10: REST API for the multi-document Conversational RAG pipeline. "
+        "REST API & Web UI for the multi-document Conversational RAG pipeline. "
         "Supports PDF ingestion, single-turn Q&A, and stateful multi-turn chat."
     ),
-    version="10.0.0",
+    version="18.0.0",
     lifespan=lifespan,
 )
+
+# Enable CORS for cross-origin integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount static frontend assets if available
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/", include_in_schema=False)
+async def serve_ui():
+    """Serve the Web UI dashboard index page if present, otherwise return API status."""
+    index_path = STATIC_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
+    return JSONResponse(
+        {
+            "status": "ok",
+            "message": "RAG Pipeline API is running. Web UI assets not found. Visit /docs for OpenAPI documentation.",
+        }
+    )
 
 
 # ------------------------------------------------------------
