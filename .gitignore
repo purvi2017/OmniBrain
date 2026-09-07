@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+test_files/extracted_images/
+vector_db/*.index
+vector_db/*.meta.json

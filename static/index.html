@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniBrain RAG AI — Enterprise Integration Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">✨</div>
+        <div>
+          <h1>OmniBrain AI</h1>
+          <span class="subtitle">Multi-Document RAG Integration Module</span>
+        </div>
+      </div>
+      <div class="header-metrics">
+        <div class="metric-pill" id="status-pill">
+          <span class="status-dot"></span>
+          <span id="system-status-text">Checking System...</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Indexed Vectors</span>
+          <span class="metric-val" id="metric-vectors">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Active Sessions</span>
+          <span class="metric-val" id="metric-sessions">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Model</span>
+          <span class="metric-val model-name" id="metric-model">gemini-2.5-flash</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-ingest">
+        <span>📄 Document Ingestion</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-query">
+        <span>🔍 Grounded RAG Query</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-chat">
+        <span>💬 Conversational Chat</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-sessions">
+        <span>📊 Session Explorer</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-health">
+        <span>⚡ System Diagnostics</span>
+      </button>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="main-content">
+
+      <!-- TAB 1: Document Ingestion -->
+      <section id="tab-ingest" class="tab-content active">
+        <div class="section-card">
+          <div class="card-header">
+            <h2>Ingest PDF Documents into FAISS Vector Store</h2>
+            <p>Upload multi-page PDFs to parse, chunk with sentence boundaries, embed with MiniLM, and index for grounded RAG.</p>
+          </div>
+          
+          <div class="upload-box" id="drop-zone">
+            <input type="file" id="file-input" multiple accept=".pdf" class="file-input">
+            <div class="upload-icon">📁</div>
+            <p class="upload-title">Drag & Drop PDF files here or <span class="browse-link">browse</span></p>
+            <p class="upload-sub">Supports multi-document indexing simultaneously (.pdf)</p>
+          </div>
+
+          <div id="file-list" class="file-list"></div>
+
+          <div class="action-bar">
+            <button id="btn-ingest" class="btn btn-primary" disabled>
+              <span>🚀 Process & Index Documents</span>
+            </button>
+          </div>
+
+          <!-- Ingestion Results -->
+          <div id="ingest-results" class="results-box hidden">
+            <h3>Ingestion Status</h3>
+            <div id="ingest-summary" class="summary-grid"></div>
+            <h4>Indexed Documents List</h4>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Filename</th>
+                    <th>Document ID</th>
+                    <th>Pages</th>
+                    <th>Chunks</th>
+                  </tr>
+                </thead>
+                <tbody id="ingest-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Grounded RAG Query -->
+      <section id="tab-query" class="tab-content">
+        <div class="grid-2col">
+          <!-- Controls Column -->
+          <div class="section-card">
+            <div class="card-header">
+              <h2>Single-Turn Grounded Query</h2>
+              <p>Execute single-turn questions against indexed FAISS vectors or direct context.</p>
+            </div>
+
+            <form id="query-form" class="form-grid">
+              <div class="form-group">
+                <label for="query-input">User Question / Query</label>
+                <textarea id="query-input" rows="3" placeholder="e.g. What are the key financial results for Q3 2026?" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="direct-context">Direct Document Context (Optional Override)</label>
+                <textarea id="direct-context" rows="3" placeholder="Paste custom document text block here to bypass FAISS retrieval..."></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doc-id-filter">Document ID Filter</label>
+                  <input type="text" id="doc-id-filter" placeholder="e.g. market_analysis_2026">
+                </div>
+                <div class="form-group">
+                  <label for="top-k">Top-K Chunks: <span id="top-k-val">3</span></label>
+                  <input type="range" id="top-k" min="1" max="10" value="3">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="min-score">Min Score Threshold: <span id="min-score-val">0.35</span></label>
+                  <input type="range" id="min-score" min="0.0" max="1.0" step="0.05" value="0.35">
+                </div>
+                <div class="form-group">
+                  <label for="max-drop">Max Score Drop: <span id="max-drop-val">0.25</span></label>
+                  <input type="range" id="max-drop" min="0.0" max="0.5" step="0.05" value="0.25">
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-query" class="btn btn-primary">
+                <span>🔎 Execute Grounded Query</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Answer & Sources Column -->
+          <div class="section-card">
+            <div class="card-header">
+              <h2>Generated Answer & Attributions</h2>
+              <p>LLM output with verified citations and document page mapping.</p>
+            </div>
+
+            <div id="query-response-card" class="response-card placeholder-state">
+              <div class="placeholder-text">
+                <span>💡 Send a query to see grounded AI answers and source attributions here.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Conversational Chat -->
+      <section id="tab-chat" class="tab-content">
+        <div class="chat-container-layout">
+          <!-- Session Sidebar -->
+          <div class="chat-sidebar">
+            <button id="btn-new-chat" class="btn btn-secondary full-width">+ New Chat Session</button>
+            <div class="sidebar-title">Active Chat Sessions</div>
+            <div id="chat-session-list" class="session-pill-list"></div>
+          </div>
+
+          <!-- Main Chat Window -->
+          <div class="chat-main-area">
+            <div class="chat-header">
+              <div>
+                <h3 id="current-session-title">Session: default_session</h3>
+                <span id="session-turn-counter" class="badge">0 Turns</span>
+              </div>
+              <button id="btn-clear-chat-history" class="btn btn-small btn-danger">Clear History</button>
+            </div>
+
+            <div id="chat-messages" class="chat-messages-scroll">
+              <div class="chat-welcome">
+                <div class="welcome-icon">💬</div>
+                <h3>Multi-Turn Conversational RAG</h3>
+                <p>Ask follow-up questions referencing earlier context. History is injected automatically while keeping factual answers grounded in indexed PDFs.</p>
+              </div>
+            </div>
+
+            <form id="chat-form" class="chat-input-row">
+              <input type="text" id="chat-input-text" placeholder="Ask a follow-up question..." autocomplete="off" required>
+              <button type="submit" id="btn-send-chat" class="btn btn-primary">Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Session Explorer -->
+      <section id="tab-sessions" class="tab-content">
+        <div class="section-card">
+          <div class="card-header">
+            <h2>Session Management & Inspection</h2>
+            <p>Monitor active RAG chat sessions, message counts, and inspect conversation state.</p>
+          </div>
+
+          <div class="action-bar flex-end">
+            <button id="btn-refresh-sessions" class="btn btn-secondary">🔄 Refresh Sessions</button>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Complete Turns</th>
+                  <th>Total Messages</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sessions-table-body">
+                <tr><td colspan="4" class="text-center">Loading session registry...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: System Diagnostics -->
+      <section id="tab-health" class="tab-content">
+        <div class="section-card">
+          <div class="card-header">
+            <h2>API Health & Diagnostic Metrics</h2>
+            <p>System status, FAISS store stats, REST endpoints verification.</p>
+          </div>
+
+          <div class="diagnostics-grid">
+            <div class="diag-card">
+              <h4>FastAPI REST Microservice Status</h4>
+              <div id="health-json" class="code-block">Loading...</div>
+            </div>
+            
+            <div class="diag-card">
+              <h4>Available API Endpoints</h4>
+              <ul class="endpoint-list">
+                <li><span class="method get">GET</span> <code>/health</code> — System Liveness Check</li>
+                <li><span class="method post">POST</span> <code>/ingest</code> — Upload & Index PDFs</li>
+                <li><span class="method post">POST</span> <code>/query</code> — Single-turn RAG Query</li>
+                <li><span class="method post">POST</span> <code>/chat/{session_id}</code> — Multi-turn Chat</li>
+                <li><span class="method get">GET</span> <code>/sessions</code> — List Active Sessions</li>
+                <li><span class="method get">GET</span> <code>/sessions/{session_id}</code> — Get Session History</li>
+                <li><span class="method delete">DELETE</span> <code>/sessions/{session_id}</code> — Clear Session</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
