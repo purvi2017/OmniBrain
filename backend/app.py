@@ -1,10 +1,22 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import uuid
 
 app = FastAPI(
     title="OmniBrain API",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 UPLOAD_DIR = "uploads"
@@ -24,6 +36,33 @@ def health():
         "status": "Healthy"
     }
 
+@app.post("/query")
+async def query_document(data: dict):
+    try:
+        query = data.get("query", "").strip()
+
+        if not query:
+            raise HTTPException(
+                status_code=400,
+                detail="Query is required"
+            )
+
+        return {
+            "status": "success",
+            "answer": f"Dummy answer for your query: {query}",
+            "source_document": "Uploaded Document",
+            "document_id": "demo-document-id",
+            "relevant_context": "This is dummy context from the uploaded document."
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Query failed"
+        )
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):

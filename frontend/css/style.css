@@ -1,0 +1,3533 @@
+/* =====================================================
+   OMNIBRAIN - GLOBAL
+   ===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+body {
+    margin: 0;
+    color: #f8fafc;
+}
+
+
+/* =====================================================
+   QUERY PAGE
+   ===================================================== */
+
+.query-page {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    padding: 45px 6% 35px;
+
+    background:
+        radial-gradient(
+            circle at 8% 8%,
+            rgba(56, 189, 248, 0.16),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 75%,
+            rgba(139, 92, 246, 0.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(37, 99, 235, 0.08),
+            transparent 35%
+        ),
+        #070b16;
+}
+
+
+/* =====================================================
+   BACKGROUND GLOW
+   ===================================================== */
+
+.bg-glow {
+    position: fixed;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+.glow-one {
+    top: -180px;
+    left: -150px;
+    background: #38bdf8;
+}
+
+.glow-two {
+    right: -180px;
+    bottom: -160px;
+    background: #8b5cf6;
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+   ===================================================== */
+
+.query-container {
+    position: relative;
+    z-index: 2;
+
+    width: min(1100px, 100%);
+    margin: 0 auto;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.query-header {
+    text-align: center;
+    margin: 25px auto 38px;
+}
+
+
+/* =====================================================
+   OMNIBRAIN FLOATING LOGO
+   ===================================================== */
+
+.brand-badge {
+    position: relative;
+
+    width: 250px;
+    height: 205px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+    box-shadow: none;
+
+    animation: logoFloat 4.5s ease-in-out infinite;
+
+    z-index: 5;
+}
+
+
+/* ---------- Main Logo ---------- */
+
+.brand-badge img {
+    width: 165px;
+    height: 165px;
+
+    object-fit: contain;
+    display: block;
+
+    border-radius: 50%;
+
+    filter:
+        drop-shadow(0 0 12px rgba(56, 189, 248, 0.65))
+        drop-shadow(0 0 28px rgba(99, 102, 241, 0.45))
+        drop-shadow(0 0 48px rgba(168, 85, 247, 0.25));
+
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
+}
+
+
+/* ---------- Logo Hover ---------- */
+
+.brand-badge:hover img {
+    transform: scale(1.08);
+
+    filter:
+        drop-shadow(0 0 16px rgba(56, 189, 248, 0.8))
+        drop-shadow(0 0 35px rgba(99, 102, 241, 0.6))
+        drop-shadow(0 0 55px rgba(168, 85, 247, 0.4));
+}
+
+
+/* =====================================================
+   FLOATING ELEMENTS
+   ===================================================== */
+
+.float-element {
+    position: absolute;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 11px;
+
+    border: 1px solid rgba(125, 211, 252, 0.22);
+    border-radius: 10px;
+
+    background: rgba(15, 23, 42, 0.65);
+
+    backdrop-filter: blur(10px);
+
+    color: #94a3b8;
+
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.25),
+        0 0 18px rgba(56, 189, 248, 0.05);
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+
+/* ---------- PDF ---------- */
+
+.float-pdf {
+    top: 28px;
+    left: 3px;
+
+    color: #7dd3fc;
+
+    animation: floatPDF 4s ease-in-out infinite;
+}
+
+
+/* ---------- AI ---------- */
+
+.float-ai {
+    top: 5px;
+    right: 12px;
+
+    color: #c4b5fd;
+
+    animation: floatAI 4.5s ease-in-out infinite;
+}
+
+
+/* ---------- Search ---------- */
+
+.float-search {
+    bottom: 18px;
+    left: 13px;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    color: #67e8f9;
+
+    border-radius: 50%;
+
+    font-size: 19px;
+
+    animation: floatSearch 5s ease-in-out infinite;
+}
+
+
+/* ---------- Document ---------- */
+
+.float-doc {
+    bottom: 3px;
+    right: 20px;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    color: #a78bfa;
+
+    border-radius: 9px;
+
+    font-size: 17px;
+
+    animation: floatDoc 4.8s ease-in-out infinite;
+}
+
+
+/* ---------- Insight ---------- */
+
+.float-insight {
+    top: 68px;
+    left: -8px;
+
+    width: 29px;
+    height: 29px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    color: #f0abfc;
+
+    font-size: 16px;
+
+    animation: floatInsight 5.5s ease-in-out infinite;
+}
+
+
+/* ---------- Data ---------- */
+
+.float-data {
+    top: 80px;
+    right: -8px;
+
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    color: #60a5fa;
+
+    font-size: 14px;
+
+    animation: floatData 4.7s ease-in-out infinite;
+}
+
+
+/* =====================================================
+   HEADER TITLE
+   ===================================================== */
+
+.query-header h1 {
+    margin-top: 5px;
+
+    color: #f8fafc;
+
+    font-size: clamp(36px, 4.8vw, 58px);
+
+    line-height: 1.05;
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+}
+
+
+.query-header h1 span {
+    display: block;
+
+    background:
+        linear-gradient(
+            90deg,
+            #38bdf8,
+            #818cf8,
+            #c084fc
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+.query-header p {
+    max-width: 650px;
+
+    margin: 16px auto 0;
+
+    color: #94a3b8;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+
+/* =====================================================
+   QUERY CARD
+   ===================================================== */
+
+.query-card {
+    padding: 22px;
+
+    border: 1px solid rgba(148, 163, 184, 0.14);
+
+    border-radius: 24px;
+
+    background: rgba(15, 23, 42, 0.72);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(20px);
+}
+
+
+/* ---------- Query Label ---------- */
+
+.query-label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 13px;
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.query-label span {
+    color: #38bdf8;
+
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   INPUT AREA
+   ===================================================== */
+
+.query-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 7px;
+
+    border: 1px solid #1e293b;
+
+    border-radius: 17px;
+
+    background: rgba(2, 6, 23, 0.82);
+
+    transition: 0.25s ease;
+}
+
+
+.query-box:focus-within {
+    border-color: rgba(56, 189, 248, 0.45);
+
+    box-shadow:
+        0 0 0 4px rgba(56, 189, 248, 0.06),
+        0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+
+#queryInput {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 54px;
+
+    padding: 0 17px;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #f8fafc;
+
+    font-size: 15px;
+}
+
+
+#queryInput::placeholder {
+    color: #475569;
+}
+
+
+/* =====================================================
+   ASK BUTTON
+   ===================================================== */
+
+.query-box button {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    height: 54px;
+
+    padding: 0 25px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0ea5e9,
+            #6366f1,
+            #7c3aed
+        );
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(59, 130, 246, 0.25);
+
+    transition: 0.25s ease;
+}
+
+
+.query-box button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 35px rgba(99, 102, 241, 0.38);
+}
+
+
+.query-box button:active {
+    transform: translateY(0);
+}
+
+
+.arrow {
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.query-status {
+    min-height: 22px;
+
+    margin: 13px 4px 0;
+
+    color: #67e8f9;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   ANSWER CARD
+   ===================================================== */
+
+.answer-card {
+    margin-top: 22px;
+
+    padding: 28px;
+
+    border: 1px solid rgba(148, 163, 184, 0.14);
+
+    border-radius: 24px;
+
+    background: rgba(15, 23, 42, 0.78);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.32);
+
+    backdrop-filter: blur(20px);
+}
+
+
+/* ---------- Answer Heading ---------- */
+
+.answer-heading {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+
+.answer-icon {
+    width: 45px;
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.15),
+            rgba(124, 58, 237, 0.15)
+        );
+
+    border: 1px solid rgba(56, 189, 248, 0.15);
+
+    font-size: 21px;
+
+    box-shadow:
+        0 0 25px rgba(56, 189, 248, 0.08);
+}
+
+
+.small-title {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.answer-heading h2 {
+    color: #f8fafc;
+
+    font-size: 22px;
+
+    font-weight: 750;
+}
+
+
+/* =====================================================
+   ANSWER CONTENT
+   ===================================================== */
+
+.answer-content {
+    margin-top: 22px;
+}
+
+
+.answer-content p {
+    margin: 0;
+
+    padding: 22px;
+
+    border-left: 3px solid #38bdf8;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(8, 47, 73, 0.35),
+            rgba(30, 41, 59, 0.35)
+        );
+
+    color: #e2e8f0;
+
+    font-size: 15px;
+
+    line-height: 1.85;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* =====================================================
+   INFORMATION CARDS
+   ===================================================== */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+
+    margin-top: 16px;
+}
+
+
+.info-card {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 18px;
+
+    border: 1px solid rgba(148, 163, 184, 0.11);
+
+    border-radius: 16px;
+
+    background: rgba(2, 6, 23, 0.42);
+
+    transition: 0.25s ease;
+}
+
+
+.info-card:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(56, 189, 248, 0.25);
+
+    background: rgba(15, 23, 42, 0.65);
+}
+
+
+.info-icon {
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: rgba(56, 189, 248, 0.08);
+
+    font-size: 17px;
+}
+
+
+.info-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+
+.info-card p {
+    margin: 0;
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+
+/* =====================================================
+   CONTEXT
+   ===================================================== */
+
+.context-card {
+    margin-top: 14px;
+
+    padding: 20px;
+
+    border: 1px solid rgba(148, 163, 184, 0.11);
+
+    border-radius: 16px;
+
+    background: rgba(2, 6, 23, 0.42);
+}
+
+
+.context-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 15px;
+}
+
+
+.context-icon {
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: rgba(139, 92, 246, 0.1);
+
+    font-size: 17px;
+}
+
+
+.context-header h3 {
+    margin: 0;
+
+    color: #e2e8f0;
+
+    font-size: 15px;
+}
+
+
+.context-card > p {
+    margin: 0;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    background: rgba(15, 23, 42, 0.6);
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    line-height: 1.75;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.query-page footer {
+    margin-top: 28px;
+
+    text-align: center;
+
+    color: #475569;
+
+    font-size: 11px;
+}
+
+
+.query-page footer span {
+    margin-right: 5px;
+}
+
+
+/* =====================================================
+   UPLOAD PAGE
+   ===================================================== */
+
+.upload-container {
+    width: min(600px, 90%);
+
+    margin: 100px auto;
+
+    padding: 45px;
+
+    text-align: center;
+
+    border: 1px solid rgba(148, 163, 184, 0.15);
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #111827
+        );
+
+    color: #f8fafc;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+
+.upload-container h1 {
+    margin-bottom: 25px;
+
+    font-size: 36px;
+}
+
+
+.upload-container input {
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #334155;
+
+    background: #020617;
+
+    color: #cbd5e1;
+}
+
+
+.upload-container button {
+    padding: 12px 28px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0ea5e9,
+            #6366f1
+        );
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+
+.upload-container button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+
+#status {
+    margin-top: 18px;
+
+    color: #67e8f9;
+
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   LOGO FLOATING ANIMATIONS
+   ===================================================== */
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+
+@keyframes floatPDF {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(-4deg);
+    }
+
+    50% {
+        transform: translate(-7px, -10px) rotate(2deg);
+    }
+}
+
+
+@keyframes floatAI {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(4deg);
+    }
+
+    50% {
+        transform: translate(8px, -9px) rotate(-2deg);
+    }
+}
+
+
+@keyframes floatSearch {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-5px, 8px);
+    }
+}
+
+
+@keyframes floatDoc {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(6px, -7px);
+    }
+}
+
+
+@keyframes floatInsight {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-6px, -8px) scale(1.12);
+    }
+}
+
+
+@keyframes floatData {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(7px, 7px) scale(1.1);
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    .query-page {
+        padding: 25px 15px 30px;
+    }
+
+    .query-header {
+        margin-top: 20px;
+    }
+
+    .brand-badge {
+        width: 210px;
+        height: 175px;
+    }
+
+    .brand-badge img {
+        width: 135px;
+        height: 135px;
+    }
+
+    .float-element {
+        transform: scale(0.9);
+    }
+
+    .query-header h1 {
+        font-size: 40px;
+
+        letter-spacing: -1.5px;
+    }
+
+    .query-header p {
+        font-size: 14px;
+    }
+
+    .query-card,
+    .answer-card {
+        padding: 20px;
+    }
+
+    .query-box {
+        flex-direction: column;
+    }
+
+    #queryInput,
+    .query-box button {
+        width: 100%;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .answer-content p {
+        padding: 18px;
+    }
+}
+/* =========================================================
+   OMNIBRAIN — BLACK + EMERALD PREMIUM THEME
+   ========================================================= */
+
+/* ---------- MAIN BACKGROUND ---------- */
+
+.query-page {
+    background:
+        radial-gradient(
+            circle at 8% 8%,
+            rgba(34, 197, 94, 0.14),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 75%,
+            rgba(22, 163, 74, 0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(16, 185, 129, 0.07),
+            transparent 35%
+        ),
+        #030705;
+}
+
+
+/* ---------- BACKGROUND GLOW ---------- */
+
+.glow-one {
+    background: #22c55e;
+    opacity: 0.18;
+}
+
+.glow-two {
+    background: #10b981;
+    opacity: 0.16;
+}
+
+
+/* ---------- BRAND / LOGO ---------- */
+
+.brand-badge {
+    animation: logoFloat 4.5s ease-in-out infinite;
+}
+
+.brand-badge img {
+    filter:
+        drop-shadow(0 0 12px rgba(34, 197, 94, 0.65))
+        drop-shadow(0 0 28px rgba(16, 185, 129, 0.42))
+        drop-shadow(0 0 45px rgba(22, 163, 74, 0.22));
+}
+
+.brand-badge:hover img {
+    filter:
+        drop-shadow(0 0 16px rgba(74, 222, 128, 0.8))
+        drop-shadow(0 0 32px rgba(34, 197, 94, 0.55))
+        drop-shadow(0 0 55px rgba(16, 185, 129, 0.3));
+}
+
+
+/* ---------- HEADING ---------- */
+
+.query-header h1 span {
+    background:
+        linear-gradient(
+            90deg,
+            #4ade80,
+            #22c55e,
+            #10b981,
+            #86efac
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* ---------- SUBTITLE ---------- */
+
+.query-header p {
+    color: #8fa99a;
+}
+
+
+/* =========================================================
+   QUERY CARD
+   ========================================================= */
+
+.query-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 24, 17, 0.88),
+            rgba(4, 12, 8, 0.78)
+        );
+
+    border-color: rgba(74, 222, 128, 0.13);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* ---------- QUERY LABEL ---------- */
+
+.query-label {
+    color: #d1fae5;
+}
+
+.query-label span {
+    color: #4ade80;
+}
+
+
+/* ---------- INPUT ---------- */
+
+.query-box {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 8, 5, 0.95),
+            rgba(4, 13, 8, 0.9)
+        );
+
+    border-color: rgba(74, 222, 128, 0.15);
+}
+
+.query-box:focus-within {
+    border-color: rgba(74, 222, 128, 0.55);
+
+    box-shadow:
+        0 0 0 4px rgba(34, 197, 94, 0.07),
+        0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+#queryInput {
+    color: #ecfdf5;
+}
+
+#queryInput::placeholder {
+    color: #527064;
+}
+
+
+/* ---------- ASK BUTTON ---------- */
+
+.query-box button {
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e,
+            #059669
+        );
+
+    box-shadow:
+        0 8px 28px rgba(34, 197, 94, 0.24);
+}
+
+.query-box button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #22c55e,
+            #4ade80,
+            #10b981
+        );
+
+    box-shadow:
+        0 12px 38px rgba(34, 197, 94, 0.42);
+}
+
+
+/* ---------- STATUS ---------- */
+
+.query-status {
+    color: #4ade80;
+}
+
+
+/* =========================================================
+   ANSWER CARD
+   ========================================================= */
+
+.answer-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 22, 15, 0.9),
+            rgba(3, 10, 6, 0.86)
+        );
+
+    border-color: rgba(74, 222, 128, 0.13);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ---------- ANSWER HEADER ---------- */
+
+.answer-heading {
+    border-bottom-color: rgba(74, 222, 128, 0.1);
+}
+
+.answer-icon {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34, 197, 94, 0.16),
+            rgba(16, 185, 129, 0.08)
+        );
+
+    border-color: rgba(74, 222, 128, 0.18);
+
+    box-shadow:
+        0 0 25px rgba(34, 197, 94, 0.1);
+}
+
+.small-title {
+    color: #4ade80;
+}
+
+.answer-heading h2 {
+    color: #f0fdf4;
+}
+
+
+/* =========================================================
+   ANSWER CONTENT
+   ========================================================= */
+
+.answer-content p {
+    border-left-color: #22c55e;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(5, 46, 22, 0.42),
+            rgba(10, 25, 17, 0.5)
+        );
+
+    color: #dcfce7;
+}
+
+
+/* =========================================================
+   INFORMATION CARDS
+   ========================================================= */
+
+.info-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 10, 6, 0.72),
+            rgba(5, 17, 10, 0.6)
+        );
+
+    border-color: rgba(74, 222, 128, 0.1);
+}
+
+.info-card:hover {
+    border-color: rgba(74, 222, 128, 0.3);
+
+    background:
+        rgba(8, 28, 17, 0.78);
+
+    box-shadow:
+        0 8px 30px rgba(34, 197, 94, 0.08);
+}
+
+.info-icon {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.info-label {
+    color: #4ade80;
+}
+
+.info-card p {
+    color: #c7e8d2;
+}
+
+
+/* =========================================================
+   CONTEXT CARD
+   ========================================================= */
+
+.context-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 10, 6, 0.72),
+            rgba(5, 17, 10, 0.6)
+        );
+
+    border-color: rgba(74, 222, 128, 0.1);
+}
+
+.context-icon {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.context-header h3 {
+    color: #dcfce7;
+}
+
+.context-card > p {
+    background: rgba(7, 23, 14, 0.7);
+    color: #8fa99a;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.query-page footer {
+    color: #365343;
+}
+
+.query-page footer span {
+    color: #4ade80;
+}
+
+
+/* =========================================================
+   UPLOAD PAGE
+   ========================================================= */
+
+.upload-container {
+    background:
+        linear-gradient(
+            145deg,
+            #07120b,
+            #030806
+        );
+
+    border-color: rgba(74, 222, 128, 0.15);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.55);
+}
+
+.upload-container input {
+    background: #020805;
+    border-color: #193b27;
+}
+
+.upload-container button {
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e,
+            #059669
+        );
+
+    box-shadow:
+        0 8px 25px rgba(34, 197, 94, 0.22);
+}
+
+.upload-container button:hover {
+    box-shadow:
+        0 12px 30px rgba(34, 197, 94, 0.38);
+}
+
+#status {
+    color: #4ade80;
+}
+
+
+/* =========================================================
+   FLOATING ELEMENTS
+   ========================================================= */
+
+.bg-glow {
+    filter: blur(110px);
+}
+
+
+/* Any floating UI elements */
+.floating-element,
+.float-item,
+.floating-icon {
+    border-color: rgba(74, 222, 128, 0.22) !important;
+
+    background:
+        rgba(4, 18, 10, 0.72) !important;
+
+    color: #4ade80 !important;
+
+    box-shadow:
+        0 0 20px rgba(34, 197, 94, 0.12) !important;
+}
+
+
+/* =========================================================
+   GREEN ORBIT / DECORATIVE GLOW
+   ========================================================= */
+
+.query-header::before {
+    content: "";
+    position: absolute;
+
+    width: 430px;
+    height: 430px;
+
+    left: 50%;
+    top: 70px;
+
+    transform: translateX(-50%);
+
+    border: 1px solid rgba(34, 197, 94, 0.07);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    animation: orbitGlow 12s linear infinite;
+}
+
+.query-header {
+    position: relative;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-11px);
+    }
+}
+
+
+@keyframes orbitGlow {
+
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+
+    to {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .query-header::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .brand-badge img {
+        width: 125px;
+        height: 125px;
+    }
+}
+/* =====================================================
+   OMNIBRAIN LOGO - GREEN THEME
+   ===================================================== */
+
+.brand-badge img {
+    filter:
+        hue-rotate(-115deg)
+        saturate(1.15)
+        drop-shadow(0 0 12px rgba(34, 141, 73, 0.65))
+        drop-shadow(0 0 28px rgba(16, 185, 129, 0.40))
+        drop-shadow(0 0 45px rgba(34, 197, 94, 0.20));
+}
+
+/* Logo hover */
+.brand-badge:hover img {
+    filter:
+        hue-rotate(-115deg)
+        saturate(1.25)
+        drop-shadow(0 0 16px rgba(74, 222, 128, 0.85))
+        drop-shadow(0 0 32px rgba(34, 197, 94, 0.55))
+        drop-shadow(0 0 50px rgba(16, 185, 129, 0.30));
+}
+/* =====================================================
+   OMNIBRAIN - PREMIUM UPLOAD PAGE
+   ===================================================== */
+
+.upload-page {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    padding: 40px 20px 35px;
+
+    background:
+        radial-gradient(
+            circle at 12% 15%,
+            rgba(0, 255, 120, 0.13),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 88% 20%,
+            rgba(0, 190, 90, 0.09),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(0, 255, 100, 0.08),
+            transparent 35%
+        ),
+        #020805;
+
+    color: #f5fff8;
+}
+
+
+/* ---------- Background Glow ---------- */
+
+.upload-glow {
+    position: fixed;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(120px);
+
+    pointer-events: none;
+
+    opacity: 0.20;
+
+    z-index: 0;
+}
+
+.upload-glow-one {
+    top: -200px;
+    left: -180px;
+
+    background: #00ff88;
+}
+
+.upload-glow-two {
+    right: -200px;
+    bottom: -180px;
+
+    background: #00c853;
+}
+
+
+/* ---------- Main ---------- */
+
+.upload-main {
+    position: relative;
+    z-index: 2;
+
+    width: min(1000px, 100%);
+
+    margin: 0 auto;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.upload-logo {
+    width: 150px;
+    height: 150px;
+
+    margin: 5px auto 15px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: uploadLogoFloat 4s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 0 15px rgba(0, 255, 110, 0.65))
+        drop-shadow(0 0 40px rgba(0, 255, 100, 0.25));
+}
+
+.upload-logo img {
+    width: 150px;
+    height: 150px;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+
+    display: block;
+}
+
+@keyframes uploadLogoFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-9px);
+    }
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.upload-header {
+    margin: 0 auto 30px;
+}
+
+.upload-header h1 {
+    margin: 0;
+
+    color: #f5fff8;
+
+    font-size: clamp(42px, 6vw, 64px);
+
+    line-height: 1.05;
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+}
+
+.upload-header h1 span {
+    color: #22e36f;
+
+    text-shadow:
+        0 0 25px rgba(34, 227, 111, 0.22);
+}
+
+.upload-header p {
+    max-width: 620px;
+
+    margin: 16px auto 0;
+
+    color: #8da99a;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =====================================================
+   ORBIT
+   ===================================================== */
+
+.upload-orbit {
+    position: absolute;
+
+    width: 850px;
+    height: 300px;
+
+    left: 50%;
+    top: 115px;
+
+    transform: translateX(-50%);
+
+    border: 1px solid rgba(34, 227, 111, 0.12);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    animation: orbitPulse 5s ease-in-out infinite;
+}
+
+@keyframes orbitPulse {
+    0%, 100% {
+        opacity: 0.45;
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translateX(-50%) scale(1.03);
+    }
+}
+
+
+/* =====================================================
+   FLOATING ELEMENTS
+   ===================================================== */
+
+.floating-element {
+    position: fixed;
+
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 46px;
+    height: 46px;
+
+    padding: 0 12px;
+
+    border: 1px solid rgba(34, 227, 111, 0.28);
+
+    border-radius: 13px;
+
+    background: rgba(3, 20, 10, 0.55);
+
+    color: #45ed88;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    box-shadow:
+        0 0 25px rgba(0, 255, 100, 0.08);
+
+    backdrop-filter: blur(10px);
+
+    pointer-events: none;
+}
+
+.pdf-float {
+    left: 7%;
+    top: 22%;
+
+    animation: floatOne 5s ease-in-out infinite;
+}
+
+.ai-float {
+    right: 8%;
+    top: 18%;
+
+    animation: floatTwo 6s ease-in-out infinite;
+}
+
+.search-float {
+    left: 9%;
+    top: 65%;
+
+    font-size: 23px;
+
+    animation: floatThree 5.5s ease-in-out infinite;
+}
+
+.data-float {
+    right: 8%;
+    top: 57%;
+
+    animation: floatOne 6.5s ease-in-out infinite;
+}
+
+.star-float {
+    left: 18%;
+    top: 32%;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 20px;
+
+    box-shadow: none;
+
+    animation: floatTwo 4.5s ease-in-out infinite;
+}
+
+.db-float {
+    right: 17%;
+    top: 36%;
+
+    animation: floatThree 5s ease-in-out infinite;
+}
+
+@keyframes floatOne {
+    0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-14px) rotate(2deg);
+    }
+}
+
+@keyframes floatTwo {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(12px);
+    }
+}
+
+@keyframes floatThree {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.05);
+    }
+}
+
+
+/* =====================================================
+   UPLOAD CARD
+   ===================================================== */
+
+.upload-card {
+    width: min(760px, 100%);
+
+    margin: 0 auto;
+
+    padding: 38px 48px 32px;
+
+    border: 1px solid rgba(34, 227, 111, 0.38);
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 31, 18, 0.82),
+            rgba(3, 13, 8, 0.92)
+        );
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.48),
+        0 0 45px rgba(0, 255, 100, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(22px);
+}
+
+
+/* ---------- PDF Icon ---------- */
+
+.upload-icon {
+    width: 74px;
+    height: 74px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px dashed rgba(60, 240, 125, 0.65);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(34, 227, 111, 0.15),
+            rgba(0, 0, 0, 0.15)
+        );
+
+    box-shadow:
+        0 0 25px rgba(34, 227, 111, 0.12);
+
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+.upload-icon span {
+    color: #35ed7a;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+
+/* ---------- Card Text ---------- */
+
+.upload-card h2 {
+    margin: 0;
+
+    color: #f1fff5;
+
+    font-size: 21px;
+
+    font-weight: 750;
+}
+
+.upload-description {
+    margin: 8px 0 22px;
+
+    color: #789486;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   FILE INPUT
+   ===================================================== */
+
+.file-wrapper {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 62px;
+
+    padding: 7px 12px;
+
+    border: 1px dashed rgba(34, 227, 111, 0.40);
+
+    border-radius: 15px;
+
+    background: rgba(1, 12, 6, 0.75);
+
+    transition: 0.25s ease;
+}
+
+.file-wrapper:hover {
+    border-color: rgba(34, 227, 111, 0.75);
+
+    box-shadow:
+        0 0 25px rgba(34, 227, 111, 0.08);
+}
+
+.file-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 8px;
+
+    border-radius: 10px;
+
+    background: rgba(34, 227, 111, 0.12);
+
+    color: #42ed83;
+
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+.file-wrapper input {
+    width: 100%;
+
+    padding: 5px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #a9c4b3;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+
+/* =====================================================
+   UPLOAD BUTTON
+   ===================================================== */
+
+.upload-button {
+    width: 100%;
+
+    height: 58px;
+
+    margin-top: 16px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #14c95b,
+            #20e875,
+            #0fae4d
+        );
+
+    color: #021108;
+
+    font-size: 16px;
+
+    font-weight: 850;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px rgba(0, 220, 90, 0.20);
+
+    transition: 0.25s ease;
+}
+
+.upload-button span {
+    margin-right: 8px;
+
+    font-size: 18px;
+}
+
+.upload-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 38px rgba(0, 230, 90, 0.34);
+}
+
+.upload-button:active {
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   SECURITY
+   ===================================================== */
+
+.upload-security {
+    margin-top: 17px;
+
+    color: #729180;
+
+    font-size: 12px;
+}
+
+.upload-security span {
+    color: #39e978;
+
+    margin-right: 5px;
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.upload-card #status {
+    margin: 18px 0 0;
+
+    padding: 14px;
+
+    border: 1px solid rgba(34, 227, 111, 0.13);
+
+    border-radius: 12px;
+
+    background: rgba(0, 70, 30, 0.15);
+
+    color: #37e979;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.upload-card #status span {
+    margin-right: 7px;
+
+    font-size: 9px;
+}
+
+
+/* =====================================================
+   FEATURES
+   ===================================================== */
+
+.upload-features {
+    width: min(760px, 100%);
+
+    margin: 18px auto 0;
+
+    padding: 19px 22px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 10px;
+
+    border: 1px solid rgba(34, 227, 111, 0.18);
+
+    border-radius: 20px;
+
+    background: rgba(3, 20, 10, 0.65);
+
+    backdrop-filter: blur(15px);
+}
+
+.feature {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    text-align: left;
+}
+
+.feature > span {
+    color: #36e879;
+
+    font-size: 21px;
+}
+
+.feature strong {
+    display: block;
+
+    color: #dfffea;
+
+    font-size: 11px;
+}
+
+.feature small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #668273;
+
+    font-size: 9px;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.upload-footer {
+    margin-top: 22px;
+
+    color: #536b5c;
+
+    font-size: 11px;
+}
+
+.upload-footer span {
+    margin-right: 5px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    .upload-page {
+        padding: 25px 15px 30px;
+    }
+
+    .upload-logo {
+        width: 115px;
+        height: 115px;
+    }
+
+    .upload-logo img {
+        width: 115px;
+        height: 115px;
+    }
+
+    .upload-header h1 {
+        font-size: 42px;
+    }
+
+    .upload-card {
+        padding: 30px 20px 25px;
+    }
+
+    .upload-features {
+        grid-template-columns: 1fr;
+    }
+
+    .feature {
+        justify-content: flex-start;
+    }
+
+    .upload-orbit {
+        width: 600px;
+    }
+
+    .floating-element {
+        transform: scale(0.8);
+    }
+
+    .pdf-float {
+        left: 3%;
+    }
+
+    .ai-float {
+        right: 3%;
+    }
+}
+/* =====================================================
+   QUERY SUGGESTIONS
+   ===================================================== */
+
+.query-suggestions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+
+    margin-top: 14px;
+}
+
+.suggestion-label {
+    color: #557563;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.query-suggestions button {
+    padding: 8px 13px;
+
+    border: 1px solid rgba(34, 227, 111, 0.14);
+    border-radius: 20px;
+
+    background: rgba(10, 35, 19, 0.55);
+
+    color: #91b39e;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+.query-suggestions button:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(34, 227, 111, 0.42);
+
+    background: rgba(18, 70, 36, 0.55);
+
+    color: #48ed82;
+
+    box-shadow:
+        0 5px 20px rgba(0, 220, 90, 0.10);
+}
+
+
+/* =====================================================
+   QUERY PROCESSING
+   ===================================================== */
+
+.query-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #40e879;
+}
+
+.query-status.processing::before {
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #32e875;
+
+    box-shadow:
+        0 0 10px rgba(50, 232, 117, 0.8);
+
+    animation: statusPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        opacity: 0.35;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+
+/* =====================================================
+   ANSWER CARD PREMIUM HOVER
+   ===================================================== */
+
+.answer-card {
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.answer-card:hover {
+    border-color: rgba(34, 227, 111, 0.22);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.35),
+        0 0 35px rgba(0, 220, 90, 0.045);
+}
+
+
+/* =====================================================
+   ANSWER REVEAL
+   ===================================================== */
+
+.answer-card.answer-ready {
+    animation: answerReveal 0.5s ease;
+}
+
+@keyframes answerReveal {
+    from {
+        opacity: 0.65;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* =====================================================
+   OMNIBRAIN — PREMIUM FLOATING KNOWLEDGE ELEMENTS
+   ===================================================== */
+
+.floating-element {
+    position: fixed;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 48px;
+    height: 48px;
+    padding: 0 13px;
+
+    border: 1px solid rgba(55, 235, 125, 0.22);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 38, 20, 0.72),
+            rgba(2, 15, 8, 0.78)
+        );
+
+    color: #63f394;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.35),
+        0 0 25px rgba(34, 197, 94, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    backdrop-filter: blur(14px);
+
+    pointer-events: none;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* ---------- Individual Elements ---------- */
+
+.pdf-float {
+    left: 7%;
+    top: 25%;
+
+    width: 58px;
+    height: 58px;
+
+    color: #86efac;
+
+    animation: floatDocument 6s ease-in-out infinite;
+}
+
+.ai-float {
+    right: 8%;
+    top: 21%;
+
+    width: 52px;
+    height: 52px;
+
+    color: #4ade80;
+
+    animation: floatAI 5s ease-in-out infinite;
+}
+
+.search-float {
+    left: 9%;
+    top: 68%;
+
+    width: 52px;
+    height: 52px;
+
+    color: #6ee7a0;
+
+    font-size: 24px;
+
+    animation: floatSearch 7s ease-in-out infinite;
+}
+
+.data-float {
+    right: 8%;
+    top: 61%;
+
+    color: #34d399;
+
+    animation: floatData 6.5s ease-in-out infinite;
+}
+
+.star-float {
+    left: 19%;
+    top: 34%;
+
+    min-width: auto;
+    width: auto;
+    height: auto;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #4ade80;
+
+    font-size: 20px;
+
+    box-shadow:
+        0 0 18px rgba(74, 222, 128, 0.2);
+
+    animation: floatStar 4s ease-in-out infinite;
+}
+
+.db-float {
+    right: 18%;
+    top: 38%;
+
+    color: #86efac;
+
+    animation: floatDatabase 5.5s ease-in-out infinite;
+}
+
+
+/* =====================================================
+   SUBTLE GLOW DOT
+   ===================================================== */
+
+.floating-element::after {
+    content: "";
+
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    top: 7px;
+    right: 7px;
+
+    border-radius: 50%;
+
+    background: #4ade80;
+
+    box-shadow:
+        0 0 9px #4ade80;
+
+    opacity: 0.65;
+
+    animation: elementPulse 2.5s ease-in-out infinite;
+}
+
+
+/* Star doesn't need the dot */
+
+.star-float::after {
+    display: none;
+}
+
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+
+@keyframes floatDocument {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translate3d(7px, -15px, 0) rotate(2deg);
+    }
+}
+
+
+@keyframes floatAI {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(-8px, 13px, 0);
+    }
+}
+
+
+@keyframes floatSearch {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate3d(9px, -12px, 0) rotate(4deg);
+    }
+}
+
+
+@keyframes floatData {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(-7px, -16px, 0);
+    }
+}
+
+
+@keyframes floatStar {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 0.55;
+    }
+
+    50% {
+        transform: translate3d(4px, -10px, 0) scale(1.15);
+        opacity: 1;
+    }
+}
+
+
+@keyframes floatDatabase {
+
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(-10px, 10px, 0);
+    }
+}
+
+
+@keyframes elementPulse {
+
+    0%, 100% {
+        opacity: 0.25;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 0.9;
+        transform: scale(1.15);
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE — HIDE SOME DECORATIONS
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .floating-element {
+        transform: scale(0.8);
+    }
+
+    .star-float,
+    .db-float {
+        display: none;
+    }
+
+    .pdf-float {
+        left: 2%;
+    }
+
+    .ai-float {
+        right: 2%;
+    }
+
+    .search-float {
+        left: 3%;
+    }
+
+    .data-float {
+        right: 3%;
+    }
+}
+/* =====================================================
+   OMNIBRAIN — PREMIUM UPLOAD PAGE
+   ===================================================== */
+
+.upload-page {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle at 8% 18%,
+            rgba(22, 163, 74, 0.20),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 78%,
+            rgba(34, 197, 94, 0.10),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 42%,
+            rgba(16, 185, 129, 0.045),
+            transparent 38%
+        ),
+        #020806;
+
+    color: #f8fafc;
+}
+
+
+/* =====================================================
+   BACKGROUND GLOW
+   ===================================================== */
+
+.upload-glow {
+    position: fixed;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(110px);
+
+    pointer-events: none;
+
+    opacity: 0.20;
+}
+
+.upload-glow-one {
+    top: -180px;
+    left: -180px;
+
+    background: #16a34a;
+}
+
+.upload-glow-two {
+    right: -180px;
+    bottom: -180px;
+
+    background: #22c55e;
+}
+
+
+/* =====================================================
+   MAIN
+   ===================================================== */
+
+.upload-main {
+    width: min(1050px, 92%);
+
+    margin: 0 auto;
+
+    padding: 35px 0 30px;
+
+    position: relative;
+    z-index: 2;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.upload-logo {
+    position: relative;
+
+    width: 150px;
+    height: 150px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: uploadLogoFloat 4s ease-in-out infinite;
+}
+
+
+/* outer green glow */
+
+.upload-logo::before {
+    content: "";
+
+    position: absolute;
+
+    width: 165px;
+    height: 165px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(34, 197, 94, 0.18);
+
+    box-shadow:
+        0 0 25px rgba(34, 197, 94, 0.18),
+        0 0 60px rgba(34, 197, 94, 0.08);
+
+    animation: uploadOrbit 12s linear infinite;
+}
+
+
+/* second ring */
+
+.upload-logo::after {
+    content: "";
+
+    position: absolute;
+
+    width: 205px;
+    height: 205px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(34, 197, 94, 0.07);
+
+    transform: rotate(20deg);
+
+    animation: uploadOrbitReverse 18s linear infinite;
+}
+
+
+.upload-logo img {
+    width: 150px;
+    height: 150px;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+
+    position: relative;
+    z-index: 3;
+
+    filter:
+        drop-shadow(0 0 12px rgba(34, 197, 94, 0.55))
+        drop-shadow(0 0 32px rgba(34, 197, 94, 0.25));
+
+    transition: 0.3s ease;
+}
+
+
+.upload-logo:hover img {
+    transform: scale(1.06);
+
+    filter:
+        drop-shadow(0 0 18px rgba(34, 197, 94, 0.75))
+        drop-shadow(0 0 40px rgba(34, 197, 94, 0.35));
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.upload-header {
+    margin-top: 25px;
+    margin-bottom: 32px;
+}
+
+
+.upload-header h1 {
+    margin: 0;
+
+    font-size: clamp(44px, 6vw, 68px);
+
+    line-height: 1.05;
+
+    letter-spacing: -2.5px;
+
+    font-weight: 800;
+
+    color: #f8fafc;
+}
+
+
+.upload-header h1 span {
+    background:
+        linear-gradient(
+            90deg,
+            #22c55e,
+            #34d399,
+            #4ade80
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+.upload-header p {
+    max-width: 650px;
+
+    margin: 18px auto 0;
+
+    color: #8fa69a;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =====================================================
+   UPLOAD CARD
+   ===================================================== */
+
+.upload-card {
+    position: relative;
+
+    width: min(760px, 100%);
+
+    margin: 0 auto;
+
+    padding: 36px 48px 32px;
+
+    border: 1px solid rgba(34, 197, 94, 0.28);
+
+    border-radius: 26px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(5, 25, 15, 0.88),
+            rgba(2, 12, 7, 0.92)
+        );
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.48),
+        0 0 50px rgba(22, 163, 74, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(20px);
+}
+
+
+/* =====================================================
+   PDF ICON
+   ===================================================== */
+
+.pdf-icon {
+    width: 76px;
+    height: 76px;
+
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    border: 1px dashed rgba(34, 197, 94, 0.65);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(34, 197, 94, 0.09),
+            transparent 70%
+        );
+
+    box-shadow:
+        0 0 25px rgba(34, 197, 94, 0.08);
+}
+
+
+.pdf-icon span {
+    color: #4ade80;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+
+.upload-card h2 {
+    margin: 0;
+
+    color: #ecfdf5;
+
+    font-size: 21px;
+
+    font-weight: 800;
+}
+
+
+.upload-description {
+    margin: 8px 0 24px;
+
+    color: #718579;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   FILE INPUT
+   ===================================================== */
+
+.file-box {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 62px;
+
+    padding: 7px;
+
+    border: 1px dashed rgba(34, 197, 94, 0.42);
+
+    border-radius: 16px;
+
+    background:
+        rgba(1, 12, 7, 0.75);
+
+    transition: 0.25s ease;
+}
+
+
+.file-box:hover {
+    border-color: rgba(74, 222, 128, 0.7);
+
+    background:
+        rgba(5, 30, 16, 0.8);
+
+    box-shadow:
+        0 0 25px rgba(34, 197, 94, 0.07);
+}
+
+
+.upload-arrow {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        rgba(34, 197, 94, 0.13);
+
+    color: #4ade80;
+
+    font-size: 24px;
+
+    font-weight: 700;
+}
+
+
+.file-box input {
+    width: 100%;
+
+    padding: 0 12px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #9fb5a7;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   UPLOAD BUTTON
+   ===================================================== */
+
+.upload-button {
+    width: 100%;
+
+    height: 62px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e,
+            #16a34a
+        );
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.2px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 12px 35px rgba(22, 163, 74, 0.22);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.upload-button span {
+    margin-right: 8px;
+
+    font-size: 21px;
+}
+
+
+.upload-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 45px rgba(34, 197, 94, 0.32);
+}
+
+
+.upload-button:active {
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.upload-status {
+    min-height: 20px;
+
+    margin: 17px 0 0;
+
+    color: #4ade80;
+
+    font-size: 13px;
+
+    font-weight: 650;
+}
+
+
+/* =====================================================
+   FLOATING ELEMENTS
+   ===================================================== */
+
+.upload-float {
+    position: fixed;
+
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 48px;
+    height: 48px;
+
+    padding: 0 13px;
+
+    border: 1px solid rgba(34, 197, 94, 0.24);
+
+    border-radius: 14px;
+
+    background:
+        rgba(3, 20, 11, 0.68);
+
+    color: #4ade80;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.35),
+        0 0 22px rgba(34, 197, 94, 0.07);
+
+    backdrop-filter: blur(12px);
+
+    pointer-events: none;
+}
+
+
+.pdf-float {
+    left: 9%;
+    top: 30%;
+
+    animation: uploadFloatOne 6s ease-in-out infinite;
+}
+
+
+.ai-float {
+    right: 9%;
+    top: 28%;
+
+    animation: uploadFloatTwo 5s ease-in-out infinite;
+}
+
+
+.search-float {
+    left: 10%;
+    top: 68%;
+
+    font-size: 23px;
+
+    animation: uploadFloatThree 7s ease-in-out infinite;
+}
+
+
+.data-float {
+    right: 10%;
+    top: 64%;
+
+    animation: uploadFloatFour 6s ease-in-out infinite;
+}
+
+
+.spark-float {
+    left: 17%;
+    top: 42%;
+
+    min-width: auto;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 21px;
+
+    animation: uploadFloatFive 4s ease-in-out infinite;
+}
+
+
+.db-float {
+    right: 18%;
+    top: 43%;
+
+    animation: uploadFloatTwo 6.5s ease-in-out infinite;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.upload-footer {
+    margin-top: 25px;
+
+    color: #46594d;
+
+    font-size: 11px;
+}
+
+
+.upload-footer span {
+    margin-right: 5px;
+}
+
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+
+@keyframes uploadLogoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-9px);
+    }
+}
+
+
+@keyframes uploadOrbit {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes uploadOrbitReverse {
+
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+
+@keyframes uploadFloatOne {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translate(8px, -15px) rotate(2deg);
+    }
+}
+
+
+@keyframes uploadFloatTwo {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-8px, 13px);
+    }
+}
+
+
+@keyframes uploadFloatThree {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(10px, -12px);
+    }
+}
+
+
+@keyframes uploadFloatFour {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-8px, -15px);
+    }
+}
+
+
+@keyframes uploadFloatFive {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(5px, -10px) scale(1.15);
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .upload-main {
+        padding-top: 25px;
+    }
+
+    .upload-logo,
+    .upload-logo img {
+        width: 125px;
+        height: 125px;
+    }
+
+    .upload-logo::before {
+        width: 140px;
+        height: 140px;
+    }
+
+    .upload-logo::after {
+        width: 175px;
+        height: 175px;
+    }
+
+    .upload-card {
+        padding: 30px 22px;
+    }
+
+    .spark-float,
+    .db-float {
+        display: none;
+    }
+
+    .pdf-float {
+        left: 2%;
+    }
+
+    .ai-float {
+        right: 2%;
+    }
+
+    .search-float {
+        left: 3%;
+    }
+
+    .data-float {
+        right: 3%;
+    }
+}
+/* =====================================================
+   OMNIBRAIN LOGO - GREEN UPLOAD THEME
+   ===================================================== */
+
+.upload-logo img {
+    filter:
+        hue-rotate(-115deg)
+        saturate(1.25)
+        brightness(1.05)
+        drop-shadow(0 0 14px rgba(34, 197, 94, 0.70))
+        drop-shadow(0 0 32px rgba(16, 185, 129, 0.45))
+        drop-shadow(0 0 55px rgba(34, 197, 94, 0.20));
+
+    transition: 
+        transform 0.35s ease,
+        filter 0.35s ease;
+}
+
+.upload-logo:hover img {
+    transform: scale(1.06);
+
+    filter:
+        hue-rotate(-115deg)
+        saturate(1.35)
+        brightness(1.08)
+        drop-shadow(0 0 18px rgba(74, 222, 128, 0.85))
+        drop-shadow(0 0 38px rgba(34, 197, 94, 0.55))
+        drop-shadow(0 0 60px rgba(16, 185, 129, 0.30));
+}
