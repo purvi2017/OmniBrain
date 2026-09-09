@@ -23,12 +23,12 @@ async function uploadPDF() {
     status.innerText = "Uploading document...";
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("files", file);
 
     try {
 
         const response = await fetch(
-            "http://127.0.0.1:8000/upload",
+            "http://127.0.0.1:8001/ingest",
             {
                 method: "POST",
                 body: formData
@@ -52,7 +52,9 @@ async function uploadPDF() {
         console.log("Upload Response:", result);
 
         status.innerText = "Document uploaded successfully ✅";
-
+        setTimeout(() => {
+            window.location.href = "../query.html";
+        }, 800);
     } catch (error) {
 
         console.error("Upload Error:", error);
@@ -62,6 +64,10 @@ async function uploadPDF() {
     }
 }
 
+
+/* =====================================================
+   OMNIBRAIN - QUERY
+   ===================================================== */
 
 /* =====================================================
    OMNIBRAIN - QUERY
@@ -107,11 +113,34 @@ async function askQuery() {
     }
 
 
+    /* ---------- Session ID ---------- */
+
+    let sessionId =
+        sessionStorage.getItem("omnibrain_session_id");
+
+    if (!sessionId) {
+
+        sessionId =
+            "session-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 8);
+
+        sessionStorage.setItem(
+            "omnibrain_session_id",
+            sessionId
+        );
+    }
+
+
     /* ---------- Loading State ---------- */
 
     queryStatus.innerText =
         "OmniBrain is thinking...";
-        queryStatus.classList.add("processing");
+
+    queryStatus.classList.add("processing");
 
     if (askButton) {
         askButton.disabled = true;
@@ -122,10 +151,10 @@ async function askQuery() {
 
     try {
 
-        /* ---------- API Request ---------- */
+        /* ---------- CHAT API Request ---------- */
 
         const response = await fetch(
-            "http://127.0.0.1:8000/query",
+            `http://127.0.0.1:8001/chat/${sessionId}`,
             {
                 method: "POST",
 
@@ -134,14 +163,18 @@ async function askQuery() {
                 },
 
                 body: JSON.stringify({
-                    query: query
+                    message: query,
+                    top_k: 3,
+                    min_score: 0.35,
+                    max_score_drop: 0.25,
+                    document_id: null
                 })
             }
         );
 
 
         console.log(
-            "Query Status:",
+            "Chat Status:",
             response.status
         );
 
@@ -151,7 +184,7 @@ async function askQuery() {
         const data = await response.json();
 
         console.log(
-            "Query Response:",
+            "Chat Response:",
             data
         );
 
@@ -161,92 +194,75 @@ async function askQuery() {
         if (!response.ok) {
 
             throw new Error(
-                data.detail || "Query failed"
+                data.detail || "Chat request failed"
             );
         }
 
 
-        /* ---------- Display AI Response ---------- */
+        /* ---------- Display Answer ---------- */
 
-        answer.innerText =
-            data.answer ||
-            "No answer available";
-
-
-        sourceDocument.innerText =
-            data.source_document ||
-            "N/A";
+        if (answer) {
+            answer.innerText =
+                data.answer || "No answer received.";
+        }
 
 
-        documentId.innerText =
-            data.document_id ||
-            "N/A";
+        /* ---------- Source Document ---------- */
+
+        if (sourceDocument) {
+            sourceDocument.innerText =
+                data.source_document || "N/A";
+        }
 
 
-        relevantContext.innerText =
-            data.relevant_context ||
-            "No relevant context found";
+        /* ---------- Document ID ---------- */
+
+        if (documentId) {
+            documentId.innerText =
+                data.document_id || "N/A";
+        }
+
+
+        /* ---------- Relevant Context ---------- */
+
+        if (relevantContext) {
+            relevantContext.innerText =
+                data.relevant_context ||
+                "No relevant context found";
+        }
 
 
         /* ---------- Success ---------- */
 
         queryStatus.innerText =
             "Query completed successfully ✓";
+
         queryStatus.classList.remove("processing");
-
-document.getElementById("answerBox")
-    .classList.add("answer-ready");
-
-        /* ---------- Scroll to Answer ---------- */
-
-        document.getElementById("answerBox")
-            .scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
 
 
     } catch (error) {
 
         console.error(
-            "Query Error:",
+            "Chat Error:",
             error
         );
 
+        queryStatus.innerText =
+            "Unable to get answer ❌";
 
-        /* ---------- Error Display ---------- */
         queryStatus.classList.remove("processing");
 
-        queryStatus.innerText =
-            "Query failed. Please try again ❌";
-
-
-        answer.innerText =
-            "Unable to get an answer from OmniBrain.";
-
-
-        sourceDocument.innerText =
-            "N/A";
-
-
-        documentId.innerText =
-            "N/A";
-
-
-        relevantContext.innerText =
-            "Please make sure the backend server is running and a document has been uploaded.";
-
+        if (answer) {
+            answer.innerText =
+                error.message ||
+                "Something went wrong.";
+        }
 
     } finally {
 
-        /* ---------- Restore Button ---------- */
-
         if (askButton) {
-
             askButton.disabled = false;
-
             askButton.style.opacity = "1";
-
             askButton.style.cursor = "pointer";
         }
     }
