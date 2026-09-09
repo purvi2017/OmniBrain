@@ -33,10 +33,12 @@ Environment:
     GEMINI_API_KEY must be set in your environment to call the Gemini API.
 """
 
+from email import message
 import os
 import sys
 import json
 import argparse
+import time
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -484,20 +486,41 @@ class ConversationalRAGPipeline:
         effective_min_score = min_score if min_score is not None else self._pipeline.min_score
         effective_max_drop = max_score_drop if max_score_drop is not None else self._pipeline.max_score_drop
 
-        # Step 1: Record user turn
-        self.session.add_message(role="user", content=message)
+        # Step 1: Get previous conversation history
+        previous_history = self.session.get_window()
 
-        # Step 2: FAISS retrieval + adaptive filtering
+        # Step 2: Build retrieval query using previous conversation
+        recent_history = []
+
+        for msg in previous_history[-4:]:
+            recent_history.append(
+                f"{msg.role}: {msg.content}"
+           )
+
+        retrieval_query = (
+            "Previous conversation:\n"
+            + "\n".join(recent_history)
+            + "\n\nCurrent user question:\n"
+            + message
+        )
+
+        # Step 3: Record current user message
+        self.session.add_message(
+            role="user",
+            content=message,
+        )
+
+        # Step 4: FAISS retrieval
         results = retrieve_context(
             store=self._pipeline.store,
-            query=message,
+            query=retrieval_query,
             top_k=effective_top_k,
             min_score=effective_min_score,
             max_score_drop=effective_max_drop,
             document_id=document_id,
         )
 
-        # Step 3: Assemble document context
+        # Step 5: Assemble document context
         context = prepare_context(results) if results else ""
 
         # Step 4: Build history block
@@ -524,15 +547,53 @@ class ConversationalRAGPipeline:
             if callable(client):
                 answer = client(prompt)
             else:
-                try:
-                    response = client.models.generate_content(
-                        model=self.model_name,
-                        contents=prompt,
+                max_retries = 3
+                answer = None
+
+                for attempt in range(max_retries):
+                    try:
+                        response = client.models.generate_content(
+                            model=self.model_name,
+                            contents=prompt,
+                        )
+
+                        raw = getattr(response, "text", None)
+
+                        if raw:
+                            answer = raw.strip()
+                        else:
+                            answer = "The LLM returned an empty response."
+
+                        break
+
+                    except Exception as exc:
+                        error_text = str(exc)
+
+                        print(
+                            f"[WARN] Gemini generation attempt "
+                            f"{attempt + 1}/{max_retries} failed: {error_text}"
+                        )
+
+                        if "503" in error_text or "UNAVAILABLE" in error_text:
+                            if attempt < max_retries - 1:
+                                wait_time = 2 ** attempt
+
+                                print(
+                                    f"[INFO] Gemini temporarily unavailable. "
+                                    f"Retrying in {wait_time} seconds..."
+                                )
+
+                                time.sleep(wait_time)
+                                continue
+
+                        raise RuntimeError(
+                            f"Gemini LLM generation failed: {exc}"
+                        ) from exc
+
+                if answer is None:
+                    raise RuntimeError(
+                        "Gemini LLM generation failed after all retry attempts."
                     )
-                    raw = getattr(response, "text", None)
-                    answer = raw.strip() if raw else "The LLM returned an empty response."
-                except Exception as exc:
-                    raise RuntimeError(f"Gemini LLM generation failed: {exc}") from exc
 
         # Step 6: Build source attribution
         sources = []
@@ -554,15 +615,22 @@ class ConversationalRAGPipeline:
         self.session.add_message(role="assistant", content=answer, sources=sources)
 
         return {
-            "query": message,
-            "answer": answer,
-            "found": bool(results),
-            "sources": sources,
-            "retrieved_chunks": len(results),
-            "model": self.model_name,
-            "turn": self.session.turn_count(),
-            "session_id": self.session.session_id,
-        }
+    "query": message,
+    "answer": answer,
+    "source_document": (
+        sources[0]["filename"] if sources else "N/A"
+    ),
+    "document_id": (
+        sources[0]["document_id"] if sources else "N/A"
+    ),
+    "relevant_context": context,
+    "found": bool(results),
+    "sources": sources,
+    "retrieved_chunks": len(results),
+    "model": self.model_name,
+    "turn": self.session.turn_count(),
+    "session_id": self.session.session_id,
+}
 
     # ----------------------------------------------------------
     # Session Utilities

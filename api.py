@@ -120,6 +120,46 @@ app = FastAPI(
     version="18.0.0",
     lifespan=lifespan,
 )
+# ------------------------------------------------------------
+# Swagger/OpenAPI compatibility fix for file uploads
+# ------------------------------------------------------------
+
+from fastapi.openapi.utils import get_openapi
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+
+    schema["openapi"] = "3.0.3"
+
+    def fix_file_schema(obj):
+        if isinstance(obj, dict):
+            if obj.get("contentMediaType") == "application/octet-stream":
+                obj.pop("contentMediaType", None)
+                obj["type"] = "string"
+                obj["format"] = "binary"
+
+            for value in obj.values():
+                fix_file_schema(value)
+
+        elif isinstance(obj, list):
+            for item in obj:
+                fix_file_schema(item)
+
+    fix_file_schema(schema)
+
+    app.openapi_schema = schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 # Enable CORS for cross-origin integration
 app.add_middleware(
